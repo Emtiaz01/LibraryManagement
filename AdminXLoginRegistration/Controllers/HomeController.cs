@@ -15,10 +15,15 @@ namespace AdminXLoginRegistration.Controllers
 
         public IActionResult Index()
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToPage("/Account/Register", new { area = "Identity" });
+            }
+
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult Admin()
         {
             return View();
         }
