@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using LibraryManagementSystem.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace AdminXLoginRegistration.Data
@@ -9,5 +10,7 @@ namespace AdminXLoginRegistration.Data
             : base(options)
         {
         }
+        public DbSet<Category> Category { get; set; }
+       // public DbSet<Role> Role {  get; set; }
     }
 }

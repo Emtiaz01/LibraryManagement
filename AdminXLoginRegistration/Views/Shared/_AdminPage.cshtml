@@ -51,8 +51,14 @@
                             <i class="bi bi-list"></i>
                         </a>
                     </li>
-                    <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Home</a></li>
-                    <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Contact</a></li>
+                    <li class="nav-item d-none d-md-block">
+                        <a class="nav-link"
+                           asp-controller="Home" asp-action="Index">Home</a>
+                    </li>
+                    <li class="nav-item d-none d-md-block"><a class="nav-link" 
+                     asp-controller="Home" asp-action="OurServices">Our Services</a></li>
+                    <li class="nav-item d-none d-md-block"><a class="nav-link"
+                    asp-controller="Home" asp-action="ContactUs">Contact Us</a></li>
                 </ul>
                 <!--end::Start Navbar Links-->
                 <!--begin::End Navbar Links-->

@@ -85,7 +85,7 @@ namespace AdminXLoginRegistration.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
-                    return LocalRedirect("/Home/Privacy");
+                    return LocalRedirect("~/Home/Index");
                 }
                 if (result.RequiresTwoFactor)
                 {

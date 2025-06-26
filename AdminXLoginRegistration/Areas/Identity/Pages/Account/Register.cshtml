@@ -47,6 +47,20 @@
                         <div class="input-group-text"><span class="bi bi-lock-fill"></span></div>
                     </div>
                     <span asp-validation-for="Input.ConfirmPassword" class="text-danger mb-3 d-block"></span>
+                    <div class="input-group mb-3">
+                        <select asp-for="Input.Role" class="form-select">
+                            <option value="">-- Select Role --</option>
+                            <option value="Manager">Manager</option>
+                            <option value="Viewer">Customer</option>
+                        </select>
+                        <div class="input-group-text">
+                            <span class="bi bi-person-badge"></span>
+                        </div>
+                    </div> 
+
+                    <span asp-validation-for="Input.Role" class="text-danger mb-3 d-block"></span>
+
+                    <span asp-validation-for="Input.Role" class="text-danger mb-3 d-block"></span>
 
                     <div class="row">
                         <div class="col-8">

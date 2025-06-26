@@ -1,8 +1,9 @@
 using System.Diagnostics;
 using AdminXLoginRegistration.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AdminXLoginRegistration.Controllers
+namespace LibraryManagementSystem.Controllers
 {
     public class HomeController : Controller
     {
@@ -13,17 +14,22 @@ namespace AdminXLoginRegistration.Controllers
             _logger = logger;
         }
 
+        [Authorize]
         public IActionResult Index()
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return RedirectToPage("/Account/Register", new { area = "Identity" });
-            }
+            //if (!User.Identity.IsAuthenticated)
+            //{
+            //    return RedirectToPage("/Account/Register", new { area = "Identity" });
+            //}
 
             return View();
         }
 
-        public IActionResult Admin()
+        public IActionResult OurServices()
+        {
+            return View();
+        }
+        public IActionResult ContactUs()
         {
             return View();
         }
