@@ -1,0 +1,61 @@
+﻿@model Category
+@{
+    Layout = "~/Views/Shared/_AdminPage.cshtml";
+}
+<div class="shadow border-0 mt-4">
+    <div class="card-header bg-dark bg-gradient text-white m-lg-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-Primary py-2">@(Model.CategoryId!=0?"Update":"Create") Category</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <form method="post" class="row" asp-action="UpsertCategory">
+            <input asp-for="CategoryId" type="hidden"/>
+            <div class="border p-3">
+                <div asp-validation-summary="ModelOnly"></div>
+                <div class="form-floating py-2 col-12">
+                    <input asp-for="CategoryName" class="form-control border-0 shadow mt-1"/>
+                    <label asp-for="CategoryName" class="ms-2 text-dark"></label>
+                    <span asp-validation-for="CategoryName" class="text-danger"></span>
+                </div>
+                <div class="form-floating py-2 col-12">
+                    <label asp-for="CategoryDescription" class="ms-2 text-dark text-muted"></label>
+                    <textarea asp-for="CategoryDescription" class="form-control border-0 shadow mt-1"></textarea>
+                </div>
+                
+                <div class="row pt-3">
+                    @if(Model.CategoryId==0)
+                    {
+                        <div class="col-6 col-md-3">
+                            <button type="submit" class=" btn btn-primary" style="width:150px">Create</button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-6 col-md-3">
+                            <button type="submit" class=" btn btn-primary" style="width:150px">Update</button>
+                        </div>
+                    }
+                    <div class="col-6 col-md-3">
+                        <a asp-controller="Category" asp-action="Index"
+                           class="btn btn-outline-success form-control"
+                           style="width:200px">Back to List</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        tinymce.init({
+            selector: 'textarea',
+            plugins: 'anchor autolink charmap codesample emoticons  lists   table visualblocks wordcount',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough |  align lineheight | numlist bullist indent outdent',
+        });
+    </script>
+}

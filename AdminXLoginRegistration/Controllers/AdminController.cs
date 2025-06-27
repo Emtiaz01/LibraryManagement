@@ -17,12 +17,17 @@ namespace LibraryManagementSystem.Controllers
             _user = user;
             _role = role;
         }
-        public IActionResult Index()
+        [HttpGet]
+        public IActionResult Dashboard()
         {
-            //var userlist = _user.Users.ToList(); 
             return View();
         }
-
+        [HttpGet]
+        public IActionResult Index()
+        { 
+            return View();
+        }
+        [HttpGet]
         public async Task<IActionResult> GetUser()
         {
             var getUser = _user.Users.ToList();

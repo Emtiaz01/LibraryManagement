@@ -1,0 +1,40 @@
+﻿@model Category
+@{
+    Layout = "~/Views/Shared/_AdminPage.cshtml";
+}
+
+<div class="shadow border-0 mt-4">
+    <div class="card-header bg-dark bg-gradient text-white m-lg-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">Delete Category</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <form method="post" class="row">
+            <input asp-for="CategoryId" hidden />
+            <div class="border p-3 mt-4">
+                <div class="form-floating py-2 col-12">
+                    <input asp-for="CategoryName" disabled class="form-control border-0 shadow mt-2" />
+                    <label asp-for="CategoryName" class="ms-2"></label>
+
+                </div>
+                <div class="form-floating py-2 col-12">
+                    <input asp-for="CategoryDescription" disabled class="form-control border-0 shadow mt-2" />
+                    <label asp-for="CategoryDescription" class="ms-2"></label>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-6 col-md-3">
+                        <button type="submit" class=" btn btn-danger" style="width:150px">Delete</button>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a asp-controller="Category" asp-action="Index"
+                           class="btn btn-outline-success form-control"
+                           style="width:200px">Back to List</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
