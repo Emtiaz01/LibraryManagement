@@ -43,7 +43,7 @@ namespace LibraryManagementSystem.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> EditRole(string id)
+        public async Task<IActionResult> GetRole(string id)
         {
             var user = await _user.FindByIdAsync(id);
             if (user == null) return NotFound();
@@ -51,41 +51,36 @@ namespace LibraryManagementSystem.Controllers
             var allRoles = _role.Roles.Select(r => r.Name).ToList();
             var userRoles = await _user.GetRolesAsync(user);
 
-            var model = new EditRolesViewModel
+            return new JsonResult(new
             {
-                UserId = user.Id,
-                Email = user.Email,
-                Roles = allRoles,
-                UserRoles = userRoles.ToList()
-            };
-
-            return View(model);
+                userId = user.Id,
+                email = user.Email,
+                allRoles = allRoles,
+                userRoles = userRoles
+            });
         }
         [HttpPost]
-        public async Task<IActionResult> EditRole(string userId, List<string> selectedRoles)
+        public async Task<IActionResult> EditRole([FromForm] string userId, [FromForm] List<string> selectedRoles)
         {
             var user = await _user.FindByIdAsync(userId);
-            if (user == null) return NotFound();
+            if (user == null)
+                return NotFound(new { message = "User not found." });
 
             var currentRoles = await _user.GetRolesAsync(user);
 
             var removeResult = await _user.RemoveFromRolesAsync(user, currentRoles);
             if (!removeResult.Succeeded)
             {
-                ModelState.AddModelError("", "Failed to remove existing roles.");
-                //return View(); 
+                return BadRequest(new { message = "Failed to remove existing roles." });
             }
 
-            // ✅ Add only the selected roles
             var addResult = await _user.AddToRolesAsync(user, selectedRoles ?? new List<string>());
             if (!addResult.Succeeded)
             {
-                ModelState.AddModelError("", "Failed to add new roles.");
-                //return View(); 
+                return BadRequest(new { message = "Failed to add new roles." });
             }
 
-            return RedirectToAction("Index");
+            return Ok(new { message = "Role updated successfully." });
         }
-
     }
 }
