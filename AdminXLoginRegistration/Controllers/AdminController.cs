@@ -18,9 +18,16 @@ namespace LibraryManagementSystem.Controllers
         }
         public IActionResult Index()
         {
-            var userlist = _user.Users.ToList(); 
-            return View(userlist);
+            //var userlist = _user.Users.ToList(); 
+            return View();
         }
+
+        public IActionResult GetUser()
+        {
+            var getUser = _user.Users.ToList();
+            return new JsonResult(getUser);
+        }
+
         [HttpGet]
         public async Task<IActionResult> EditRole(string id)
         {

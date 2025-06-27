@@ -4,33 +4,23 @@
     Layout = "~/Views/Shared/_AdminPage.cshtml";
 }
 
-<h2>All Users</h2>
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Email</th>
-            <th>Phone Number</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var user in Model)
-        {
-            <tr>
-                <td>@user.Email</td>
-                <td>@user.PhoneNumber</td>
-                <td>
-                    <div class="w-75 btn-group" role="group">
-                        <a asp-controller="Admin" asp-action="EditRole" asp-route-id="@user.Id" class="btn btn-primary mx-2">
-                            <i class="bi bi-pencil-square"></i> Edit
-                        </a>
-                        <a asp-controller="Category" asp-action="Delete" asp-route-id="user.Id" class="btn btn-danger mx-2">
-                            <i class="bi bi-trash-fill"></i> Delete
-                        </a>
-                    </div>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
+<div class="card shadow mt-4">
+    <div class="card-header bg-dark text-white">
+        <h4 class="mb-0">All Users</h4>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-hover text-center" id="_dataTable">
+            <thead class="thead-light">
+                <tr>
+                    <th class="bg-secondary text-white">Email</th>
+                    <th class="bg-secondary text-white">Phone Number</th>
+                    <th class="bg-secondary text-white">Actions</th>
+                </tr>
+            </thead>
+            
+        </table>
+    </div>
+</div>
+@section Scripts{
+    <script src="~/js/TableData.js"></script>
+}

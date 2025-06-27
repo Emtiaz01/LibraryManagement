@@ -33,6 +33,7 @@
     <!--end::Third Party Plugin(Bootstrap Icons)-->
     <!--begin::Required Plugin(AdminLTE)-->
     <link rel="stylesheet" href="../../../dist/css/adminlte.css" />
+    <link href="~/datatable/datatables.min.css" rel="stylesheet" />
     <!--end::Required Plugin(AdminLTE)-->
 </head>
 <!--end::Head-->
@@ -225,6 +226,10 @@
     <!--end::App Wrapper-->
     <!--begin::Script-->
     <!--begin::Third Party Plugin(OverlayScrollbars)-->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/datatable/datatables.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/browser/overlayscrollbars.browser.es6.min.js"
             integrity="sha256-dghWARbRe2eLlIJ56wNB+b760ywulqK3DzZYEpsg2fQ="
             crossorigin="anonymous"></script>
@@ -261,6 +266,7 @@
     </script>
     <!--end::OverlayScrollbars Configure-->
     <!--end::Script-->
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 <!--end::Body-->
 </html>
