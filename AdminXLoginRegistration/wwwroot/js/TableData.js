@@ -26,6 +26,12 @@ function OnSuccess(response) {
             { data: 'email' },
             { data: 'phoneNumber' },
             {
+                data: 'userRoles',
+                render: function (data, type, row) {
+                    return data && data.length > 0 ? data.join(', ') : 'No Role';
+                }
+            },
+            {
                 data: 'id',
                 "render": function (data) {
                     return `<div class="btn-group" role="group">

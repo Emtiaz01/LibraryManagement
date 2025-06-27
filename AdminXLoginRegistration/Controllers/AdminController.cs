@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
+using System.Threading.Tasks;
 
 namespace LibraryManagementSystem.Controllers
 {
@@ -22,10 +23,23 @@ namespace LibraryManagementSystem.Controllers
             return View();
         }
 
-        public IActionResult GetUser()
+        public async Task<IActionResult> GetUser()
         {
             var getUser = _user.Users.ToList();
-            return new JsonResult(getUser);
+
+            var userWithRole = new List<UserRoleViewModel>();
+            foreach(var i in getUser)
+            {
+                var roles = await _user.GetRolesAsync(i);
+                userWithRole.Add(new UserRoleViewModel
+                {
+                    UserId = i.Id,
+                    Email = i.Email,
+                    PhoneNumber = i.PhoneNumber,
+                    UserRoles = roles.ToList()
+                });
+            }
+            return new JsonResult(userWithRole);
         }
 
         [HttpGet]
