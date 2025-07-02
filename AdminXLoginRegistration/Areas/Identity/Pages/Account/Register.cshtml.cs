@@ -48,6 +48,7 @@ namespace AdminXLoginRegistration.Areas.Identity.Pages.Account
         public string ReturnUrl { get; set; }
 
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
+        //public List<SelectListItem> AvailableRoles { get; set; }
 
         public class InputModel
         {
@@ -78,6 +79,8 @@ namespace AdminXLoginRegistration.Areas.Identity.Pages.Account
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             //Role = await _context.Role.ToListAsync();
+
+
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
@@ -95,7 +98,7 @@ namespace AdminXLoginRegistration.Areas.Identity.Pages.Account
                     await _userManager.AddToRoleAsync(user, Input.Role);
 
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
+                        return RedirectToAction("Dashboard","Admin");
                     
                 }
                 foreach (var error in result.Errors)
