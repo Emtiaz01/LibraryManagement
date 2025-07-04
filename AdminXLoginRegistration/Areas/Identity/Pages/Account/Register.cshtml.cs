@@ -100,11 +100,11 @@ namespace AdminXLoginRegistration.Areas.Identity.Pages.Account
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     if(Input.Role == "Admin")
                     {
-                        return RedirectToAction("Dashboard", "Admin");
+                        return RedirectToAction("Dashboard", "Admin", new { area = "AdminArea" });
                     }
                     if (Input.Role == "Customer")
                     {
-                        return RedirectToAction("Index", "Customer");
+                        return RedirectToAction("Index", "Customer", new { area = "CustomerArea" });
                     }
 
                 }
