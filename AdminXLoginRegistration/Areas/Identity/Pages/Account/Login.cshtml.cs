@@ -85,7 +85,15 @@ namespace AdminXLoginRegistration.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
-                    return LocalRedirect("~/Home/Index");
+                    var user = await _userManager.FindByEmailAsync(Input.Email);
+                    if (await _userManager.IsInRoleAsync(user, "Admin"))
+                    {
+                        return RedirectToAction("Dashboard", "Admin");
+                    }
+                    if (await _userManager.IsInRoleAsync(user, "Customer"))
+                    {
+                        return RedirectToAction("Index", "Customer");
+                    }
                 }
                 if (result.RequiresTwoFactor)
                 {
