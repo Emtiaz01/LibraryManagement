@@ -88,11 +88,11 @@ namespace AdminXLoginRegistration.Areas.Identity.Pages.Account
                     var user = await _userManager.FindByEmailAsync(Input.Email);
                     if (await _userManager.IsInRoleAsync(user, "Admin"))
                     {
-                        return RedirectToAction("Dashboard", "Admin");
+                        return RedirectToAction("Dashboard", "Admin", new { area = "AdminArea" });
                     }
                     if (await _userManager.IsInRoleAsync(user, "Customer"))
                     {
-                        return RedirectToAction("Index", "Customer");
+                        return RedirectToAction("Index", "Customer", new { area = "CustomerArea" });
                     }
                 }
                 if (result.RequiresTwoFactor)
@@ -102,7 +102,7 @@ namespace AdminXLoginRegistration.Areas.Identity.Pages.Account
                 if (result.IsLockedOut)
                 {
                     _logger.LogWarning("User account locked out.");
-                    return RedirectToPage("./Lockout");
+                    return RedirectToPage("/Account/Lockout", new { area = "Identity" });
                 }
                 else
                 {

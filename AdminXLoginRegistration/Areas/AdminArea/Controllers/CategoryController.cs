@@ -3,8 +3,9 @@ using LibraryManagementSystem.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace LibraryManagementSystem.Controllers
+namespace LibraryManagementSystem.Areas.AdminArea.Controllers
 {
+    [Area("AdminArea")]
     public class CategoryController : Controller
     {
         private readonly ApplicationDbContext _db;

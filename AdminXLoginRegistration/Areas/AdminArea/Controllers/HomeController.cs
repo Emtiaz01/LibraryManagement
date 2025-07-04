@@ -3,8 +3,9 @@ using AdminXLoginRegistration.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LibraryManagementSystem.Controllers
+namespace LibraryManagementSystem.Areas.AdminArea.Controllers
 {
+    [Area("AdminArea")] 
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

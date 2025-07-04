@@ -5,8 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using System.Threading.Tasks;
 
-namespace LibraryManagementSystem.Controllers
+namespace LibraryManagementSystem.Areas.AdminArea.Controllers
 {
+    [Area("AdminArea")]
     //[Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
@@ -60,8 +61,8 @@ namespace LibraryManagementSystem.Controllers
             {
                 userId = user.Id,
                 email = user.Email,
-                allRoles = allRoles,
-                userRoles = userRoles
+                allRoles,
+                userRoles
             });
         }
         [HttpPost]
