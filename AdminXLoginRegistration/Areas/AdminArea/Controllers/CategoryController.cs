@@ -78,7 +78,6 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
             {
                 return Json(new { success = false, message = "Error while deleting" });
             }
-
             _db.Category.Remove(obj);
             _db.SaveChanges();
             return Json(new { success = true, message = "Deleted successfully" });
