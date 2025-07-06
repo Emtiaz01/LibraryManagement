@@ -5,7 +5,7 @@ $(document).ready(function () {
 
 function loadDataTable() {
     $.ajax({
-        url: '/Admin/GetUser',
+        url: '/AdminArea/Admin/GetUser',
         type: 'GET',
         dataType: 'json',
         success: OnSuccess

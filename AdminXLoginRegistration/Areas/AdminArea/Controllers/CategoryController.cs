@@ -27,9 +27,9 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
         public IActionResult UpsertCategory(int? id)
         {
             var model = new Category();
-            if(id==null || id==0)
+            if (id == null || id == 0)
             {
-                return View();
+                return View(model);
             }
             else
             {
@@ -42,10 +42,10 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
         [HttpPost]
         public IActionResult UpsertCategory(Category category)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var categoryId = category.CategoryId;
-                if(categoryId!=0)
+                if (categoryId != 0)
                 {
                     _db.Category.Update(category);
                     _db.SaveChanges();
@@ -60,30 +60,30 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
             }
             return View();
         }
-
         [HttpGet]
-        public IActionResult Delete(int? id)
-        {
-            if(id ==null || id==0)
+        public IActionResult Delete(int id) {
+            var obj = _db.Category.FirstOrDefault(u => u.CategoryId == id);
+            if (obj == null)
             {
                 return NotFound();
             }
-            Category? category = _db.Category.FirstOrDefault(u=>u.CategoryId==id);
-
-            if(category == null)
-            {
-                return NotFound();
-            }
-            return View(category);  
+            return View(obj);
         }
-        [HttpPost,ActionName("Delete")]
-        public IActionResult DeletePost(int id)
+        [HttpPost]
+        [Route("AdminArea/Category/DeleteIT/{id}")]
+        public IActionResult DeleteIT(int id)
         {
-            Category? obj = _db.Category.FirstOrDefault(u => u.CategoryId == id);
-            if(obj == null) { NotFound(); }
+            var obj = _db.Category.FirstOrDefault(u => u.CategoryId == id);
+            if (obj == null)
+            {
+                return Json(new { success = false, message = "Error while deleting" });
+            }
+
             _db.Category.Remove(obj);
             _db.SaveChanges();
-            return RedirectToAction("Index");
+            return Json(new { success = true, message = "Deleted successfully" });
         }
+
     }
+
 }
