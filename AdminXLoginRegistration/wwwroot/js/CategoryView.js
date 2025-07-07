@@ -31,8 +31,6 @@ function CategoryDataTable() {
         destroy: true 
     });
 }
-
-
 function DeleteCategory(id) {
     if (confirm("Are you sure you want to delete this category?")) {
         $.ajax({

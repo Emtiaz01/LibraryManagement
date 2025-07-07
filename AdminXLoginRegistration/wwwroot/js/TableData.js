@@ -51,7 +51,7 @@ function OnSuccess(response) {
 
 function showRoleEditor(userId, buttonElement) {
     $.ajax({
-        url: `/Admin/GetRole?id=${userId}`,
+        url: `/AdminArea/Admin/GetRole?id=${userId}`,
         type: 'GET',
         dataType: 'json',
         success: function (data) {
@@ -71,7 +71,7 @@ function saveUserRole(userId, saveButton) {
     const $row = $(saveButton).closest('tr');
     const selectedRole = $row.find('.role-selector').val();
     $.ajax({
-        url: '/Admin/EditRole',
+        url: '/AdminArea/Admin/EditRole',
         type: 'POST',
         data: {
             userId: userId,
