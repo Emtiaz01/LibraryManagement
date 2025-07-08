@@ -46,7 +46,7 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
             };
 
             if (id == null || id == 0)
-                return View(vm); // Create
+                return View(vm);
             else
             {
                 var productInDb = _context.Product.FirstOrDefault(p => p.ProductId == id);
@@ -54,7 +54,7 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
                     return NotFound();
 
                 vm.Product = productInDb;
-                return View(vm); // Edit
+                return View(vm);
             }
         }
 
@@ -79,12 +79,10 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
                         file.CopyTo(fileStream);
                     }
 
-                    // 🔥 Set new image path
                     vm.Product.ProductImage = @"\images\products\" + fileName;
                 }
                 else
                 {
-                    // 🔥 No new image uploaded: preserve the old image
                     var productFromDb = _context.Product.AsNoTracking()
                                         .FirstOrDefault(p => p.ProductId == vm.Product.ProductId);
                     if (productFromDb != null)
@@ -92,8 +90,6 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
                         vm.Product.ProductImage = productFromDb.ProductImage;
                     }
                 }
-
-                // Save
                 if (vm.Product.ProductId == 0)
                     _context.Product.Add(vm.Product);
                 else
@@ -102,8 +98,6 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
                 _context.SaveChanges();
                 return RedirectToAction("Index");
             }
-
-            // Repopulate category list
             vm.CategoryList = _context.Category.Select(c => new SelectListItem
             {
                 Text = c.CategoryName,
@@ -122,8 +116,6 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
             {
                 return Json(new { success = false, message = "Product not found." });
             }
-
-            // Delete image file from wwwroot if exists
             if (!string.IsNullOrEmpty(product.ProductImage))
             {
                 var imagePath = Path.Combine(_web.WebRootPath, product.ProductImage.TrimStart('\\'));
@@ -138,6 +130,5 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
 
             return Json(new { success = true, message = "Product deleted successfully." });
         }
-
     }
 }

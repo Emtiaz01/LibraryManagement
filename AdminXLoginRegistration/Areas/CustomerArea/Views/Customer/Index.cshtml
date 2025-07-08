@@ -1,5 +1,45 @@
 ﻿@{
     Layout= "~/Views/Shared/_AdminPage.cshtml";
 }
-
-<h1> Hello World!!</h1>
+<div class="row pb-3">
+    @foreach (var product in Model)
+    {
+        <div class="col-lg-3 col-sm-6">
+            <div class="row p-2">
+                <div class="col-12 p-1">
+                    <div class="card border-0 p-3 shadow  border-top border-5 rounded"> 
+                        <img src="@product.ProductImage" class="card-img-top rounded"/>
+                        <div class="card-body pb-0">
+                            <div class="pl-1">
+                                <p class="card-title h5 text-dark opacity-75 text-uppercase text-center">@product.ProductName</p>
+                                <p class="card-title text-warning text-center">by <b>@product.ProductName</b></p>
+                            </div>
+                            <div class="pl-1">
+                                <p class="text-dark text-opacity-75 text-center mb-0">
+                                    List Price: 
+                                    <span class="text-decoration-line-through">
+                                        50
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="pl-1">
+                                <p class="text-dark text-opacity-75 text-center">As low as: 
+                                    <span>
+                                        @product.ProductPrice.ToString("c")
+                                    </span>
+                                </p>
+                            </div> 
+                        </div>
+                        <div>
+                            <a asp-action="Details"
+                            asp-route-id="@product.ProductId"
+                            class="btn btn-primary bg-gradient border-0 form-control">
+                                Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
