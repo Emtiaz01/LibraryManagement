@@ -2,80 +2,86 @@
 
 @{
     Layout = "~/Views/Shared/_AdminPage.cshtml";
+    ViewData["Title"] = Model.Product.ProductId == 0 ? "Add Product" : "Edit Product";
 }
 
-<h2>@ViewData["Title"]</h2>
-
-@if (!ViewData.ModelState.IsValid)
-{
-    <div class="alert alert-danger">
-        <ul>
-            @foreach (var modelState in ViewData.ModelState.Values)
-            {
-                foreach (var error in modelState.Errors)
-                {
-                    <li>@error.ErrorMessage</li>
-                }
-            }
-        </ul>
+<div class="card shadow-sm border-0 rounded-3 mt-4">
+    <div class="card-header bg-primary text-white">
+        <h4 class="my-2">@ViewData["Title"]</h4>
     </div>
-}
 
-
-<form asp-action="Upsert" enctype="multipart/form-data" method="post">
-    <div class="row">
-        <div class="col-md-8">
+    <div class="card-body">
+       
+        <form asp-action="Upsert" enctype="multipart/form-data" method="post">
             <input type="hidden" asp-for="Product.ProductId" />
 
-            <div class="form-group mb-2">
-                <label asp-for="Product.ProductName"></label>
+            <div class="mb-3">
+                <label asp-for="Product.ProductName" class="form-label"></label>
                 <input asp-for="Product.ProductName" class="form-control" />
                 <span asp-validation-for="Product.ProductName" class="text-danger"></span>
             </div>
 
-            <div class="form-group mb-2">
-                <label asp-for="Product.Description"></label>
+            <div class="mb-3">
+                <label asp-for="Product.Description" class="form-label"></label>
                 <textarea asp-for="Product.Description" class="form-control"></textarea>
-                <span asp-validation-for="Product.Description" class="text-danger"></span>
             </div>
 
-            <div class="form-group mb-2">
-                <label asp-for="Product.ProductISBN"></label>
+            <div class="mb-3">
+                <label asp-for="Product.ProductISBN" class="form-label"></label>
                 <input asp-for="Product.ProductISBN" class="form-control" />
                 <span asp-validation-for="Product.ProductISBN" class="text-danger"></span>
             </div>
 
-            <div class="form-group mb-2">
-                <label asp-for="Product.ProductAuthor"></label>
+            <div class="mb-3">
+                <label asp-for="Product.ProductAuthor" class="form-label"></label>
                 <input asp-for="Product.ProductAuthor" class="form-control" />
                 <span asp-validation-for="Product.ProductAuthor" class="text-danger"></span>
             </div>
 
-            <div class="form-group mb-2">
-                <label asp-for="Product.ProductPrice"></label>
+            <div class="mb-3">
+                <label asp-for="Product.ProductPrice" class="form-label"></label>
                 <input asp-for="Product.ProductPrice" class="form-control" />
                 <span asp-validation-for="Product.ProductPrice" class="text-danger"></span>
             </div>
 
-            <div class="form-group mb-2">
-                <label asp-for="Product.CategoryId">Category</label>
+            <div class="mb-3">
+                <label asp-for="Product.CategoryId" class="form-label">Category</label>
                 <select asp-for="Product.CategoryId" asp-items="Model.CategoryList" class="form-select">
                     <option disabled selected value="0">-- Select Category --</option>
                 </select>
                 <span asp-validation-for="Product.CategoryId" class="text-danger"></span>
             </div>
 
-            <div class="form-group mb-2">
-                <label>Product Image</label>
+            <div class="mb-3">
+                <label class="form-label">Product Image</label>
                 <input type="file" name="file" class="form-control" />
+
+                @if (!string.IsNullOrEmpty(Model.Product.ProductImage))
+                {
+                    <div class="mt-2">
+                        <label>Current Image:</label><br />
+                        <img src="@Model.Product.ProductImage"
+                             style="width: 22%;height:210px;border-radius:5px; border: 1px solid #bbb9b9" />
+                    </div>
+                }
             </div>
 
-            <button type="submit" class="btn btn-primary mt-2">Save</button>
-            <a asp-action="Index" class="btn btn-secondary mt-2">Back to List</a>
-        </div>
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-success">Save</button>
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            </div>
+        </form>
     </div>
-</form>
+</div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    <partial name="_ValidationScriptsPartial"/>
+
+    <script>
+        tinymce.init({
+            selector: 'textarea',
+            plugins: 'anchor autolink charmap codesample emoticons  lists   table visualblocks wordcount',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough |  align lineheight | numlist bullist indent outdent',
+        });
+    </script>
 }
