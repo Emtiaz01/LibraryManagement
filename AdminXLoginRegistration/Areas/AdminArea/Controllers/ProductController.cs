@@ -112,5 +112,32 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
 
             return View(vm);
         }
+
+        [HttpDelete]
+        public IActionResult Delete(int id)
+        {
+            var product = _context.Product.FirstOrDefault(p => p.ProductId == id);
+
+            if (product == null)
+            {
+                return Json(new { success = false, message = "Product not found." });
+            }
+
+            // Delete image file from wwwroot if exists
+            if (!string.IsNullOrEmpty(product.ProductImage))
+            {
+                var imagePath = Path.Combine(_web.WebRootPath, product.ProductImage.TrimStart('\\'));
+                if (System.IO.File.Exists(imagePath))
+                {
+                    System.IO.File.Delete(imagePath);
+                }
+            }
+
+            _context.Product.Remove(product);
+            _context.SaveChanges();
+
+            return Json(new { success = true, message = "Product deleted successfully." });
+        }
+
     }
 }

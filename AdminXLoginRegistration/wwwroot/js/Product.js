@@ -33,3 +33,19 @@
         ]
     });
 });
+
+function DeleteProduct(id) {
+    if (confirm("Are you sure you want to delete this product?")) {
+        $.ajax({
+            url: `/AdminArea/Product/Delete/${id}`,
+            type: 'DELETE',
+            success: function (result) {
+                alert("Product deleted successfully.");
+                $('#ProductTable').DataTable().ajax.reload(); // Refresh table
+            },
+            error: function (xhr) {
+                alert("Error deleting product: " + xhr.responseText);
+            }
+        });
+    }
+}
