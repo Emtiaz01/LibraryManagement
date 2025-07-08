@@ -3,7 +3,7 @@
         ajax: {
             url: '/AdminArea/Product/GetProduct',
             type: 'GET',
-            dataSrc: 'data'
+            dataSrc: ''
         },
         columns: [
             { data: 'productName' },
@@ -20,7 +20,7 @@
                 render: function (data) {
                     return `
             <div class="w-75 btn-group" role="group">
-                <a href="/AdminArea/Product/UpsertProduct?id=${data}" class="btn btn-sm btn-primary m-1">
+                <a href="/AdminArea/Product/Upsert?id=${data}" class="btn btn-sm btn-primary m-1">
                     <i class="bi bi-pencil-square"></i> Edit
                 </a>
                 <button onclick="DeleteProduct(${data})" class="btn btn-sm btn-danger m-1">

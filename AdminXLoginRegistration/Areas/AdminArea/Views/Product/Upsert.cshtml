@@ -1,0 +1,81 @@
+﻿@model LibraryManagementSystem.ViewModel.ProductViewModel
+
+@{
+    Layout = "~/Views/Shared/_AdminPage.cshtml";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <ul>
+            @foreach (var modelState in ViewData.ModelState.Values)
+            {
+                foreach (var error in modelState.Errors)
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            }
+        </ul>
+    </div>
+}
+
+
+<form asp-action="Upsert" enctype="multipart/form-data" method="post">
+    <div class="row">
+        <div class="col-md-8">
+            <input type="hidden" asp-for="Product.ProductId" />
+
+            <div class="form-group mb-2">
+                <label asp-for="Product.ProductName"></label>
+                <input asp-for="Product.ProductName" class="form-control" />
+                <span asp-validation-for="Product.ProductName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-2">
+                <label asp-for="Product.Description"></label>
+                <textarea asp-for="Product.Description" class="form-control"></textarea>
+                <span asp-validation-for="Product.Description" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-2">
+                <label asp-for="Product.ProductISBN"></label>
+                <input asp-for="Product.ProductISBN" class="form-control" />
+                <span asp-validation-for="Product.ProductISBN" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-2">
+                <label asp-for="Product.ProductAuthor"></label>
+                <input asp-for="Product.ProductAuthor" class="form-control" />
+                <span asp-validation-for="Product.ProductAuthor" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-2">
+                <label asp-for="Product.ProductPrice"></label>
+                <input asp-for="Product.ProductPrice" class="form-control" />
+                <span asp-validation-for="Product.ProductPrice" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-2">
+                <label asp-for="Product.CategoryId">Category</label>
+                <select asp-for="Product.CategoryId" asp-items="Model.CategoryList" class="form-select">
+                    <option disabled selected value="0">-- Select Category --</option>
+                </select>
+                <span asp-validation-for="Product.CategoryId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-2">
+                <label>Product Image</label>
+                <input type="file" name="file" class="form-control" />
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-2">Save</button>
+            <a asp-action="Index" class="btn btn-secondary mt-2">Back to List</a>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

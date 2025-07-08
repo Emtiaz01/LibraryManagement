@@ -1,6 +1,7 @@
 ﻿using AdminXLoginRegistration.Data;
 using LibraryManagementSystem.Models;
 using LibraryManagementSystem.ViewModel;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -32,26 +33,84 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
             }
             return new JsonResult(product);
         }
-        [HttpGet]
-        public IActionResult UpsertProduct(int? id)
+        public IActionResult Upsert(int? id)
         {
-            var model = new ProductViewModel
+            ProductViewModel vm = new ProductViewModel()
             {
-                CategoryList = _context.Category
-                    .Select(c => new SelectListItem
-                    {
-                        Text = c.CategoryName,
-                        Value = c.CategoryId.ToString()
-                    }),
-                Product = id == null ? new Product() :
-                          _context.Product.FirstOrDefault(p => p.ProductId == id) ?? new Product()
+                Product = new Product(),
+                CategoryList = _context.Category.Select(c => new SelectListItem
+                {
+                    Text = c.CategoryName,
+                    Value = c.CategoryId.ToString()
+                })
             };
-            return View(model);
+
+            if (id == null || id == 0)
+                return View(vm); // Create
+            else
+            {
+                var productInDb = _context.Product.FirstOrDefault(p => p.ProductId == id);
+                if (productInDb == null)
+                    return NotFound();
+
+                vm.Product = productInDb;
+                return View(vm); // Edit
+            }
         }
 
-        //[HttpPost]
-        //public IActionResult UpsertProduct(ProductViewModel model,IFormFile? file)
-        
-        //}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Upsert(ProductViewModel vm, IFormFile? file)
+        {
+            if (ModelState.IsValid)
+            {
+                string wwwRootPath = _web.WebRootPath;
+
+                if (file != null)
+                {
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                    string productPath = Path.Combine(wwwRootPath, @"images\products");
+
+                    if (!Directory.Exists(productPath))
+                        Directory.CreateDirectory(productPath);
+
+                    using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
+                    {
+                        file.CopyTo(fileStream);
+                    }
+
+                    // 🔥 Set new image path
+                    vm.Product.ProductImage = @"\images\products\" + fileName;
+                }
+                else
+                {
+                    // 🔥 No new image uploaded: preserve the old image
+                    var productFromDb = _context.Product.AsNoTracking()
+                                        .FirstOrDefault(p => p.ProductId == vm.Product.ProductId);
+                    if (productFromDb != null)
+                    {
+                        vm.Product.ProductImage = productFromDb.ProductImage;
+                    }
+                }
+
+                // Save
+                if (vm.Product.ProductId == 0)
+                    _context.Product.Add(vm.Product);
+                else
+                    _context.Product.Update(vm.Product);
+
+                _context.SaveChanges();
+                return RedirectToAction("Index");
+            }
+
+            // Repopulate category list
+            vm.CategoryList = _context.Category.Select(c => new SelectListItem
+            {
+                Text = c.CategoryName,
+                Value = c.CategoryId.ToString()
+            });
+
+            return View(vm);
+        }
     }
 }

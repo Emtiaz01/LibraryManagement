@@ -9,20 +9,21 @@ namespace LibraryManagementSystem.Models
         [Key]
         public int ProductId { get; set; }
         [Required]
-        public string? ProductName { get; set; }
+        public string ProductName { get; set; }
         [Required]
-        public string? Description { get; set; }
+        public string Description { get; set; }
         [Required]
-        public string? ProductISBN { get; set; }
+        public string ProductISBN { get; set; }
         [Required]
-        public string? ProductAuthor { get; set; }
+        public string ProductAuthor { get; set; }
         [Required]
         [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
         public double ProductPrice { get; set; }
+        [Range(1, int.MaxValue, ErrorMessage = "Please select a category")]
         public int CategoryId { get; set; }
         [ForeignKey("CategoryId")]
         [ValidateNever]
-        public Category? Category { get; set; }
+        public Category Category { get; set; }
         [ValidateNever]
         public string? ProductImage { get; set; }
     }
