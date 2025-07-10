@@ -1,4 +1,5 @@
-﻿using LibraryManagementSystem.ViewModel;
+﻿using LibraryManagementSystem.Models;
+using LibraryManagementSystem.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,9 +12,9 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
     //[Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
-        private readonly UserManager<IdentityUser> _user;
+        private readonly UserManager<ApplicationUser> _user;
         private readonly RoleManager<IdentityRole> _role;
-        public AdminController(UserManager<IdentityUser> user, RoleManager<IdentityRole> role)
+        public AdminController(UserManager<ApplicationUser> user, RoleManager<IdentityRole> role)
         {
             _user = user;
             _role = role;

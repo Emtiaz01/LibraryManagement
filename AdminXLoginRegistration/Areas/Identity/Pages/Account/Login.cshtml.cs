@@ -11,19 +11,20 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using LibraryManagementSystem.Models;
 
 namespace AdminXLoginRegistration.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
     public class LoginModel : PageModel
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, 
+        public LoginModel(SignInManager<ApplicationUser> signInManager, 
             ILogger<LoginModel> logger,
-            UserManager<IdentityUser> userManager)
+            UserManager<ApplicationUser> userManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -76,7 +77,12 @@ namespace AdminXLoginRegistration.Areas.Identity.Pages.Account
             returnUrl = Url.Action("Index", "Home");
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-        
+
+            if (Input == null)
+            {
+                ModelState.AddModelError(string.Empty, "Invalid login data.");
+                return Page();
+            }
             if (ModelState.IsValid)
             {
                 // This doesn't count login failures towards account lockout
@@ -86,6 +92,16 @@ namespace AdminXLoginRegistration.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User logged in.");
                     var user = await _userManager.FindByEmailAsync(Input.Email);
+                    if (user == null)
+                    {
+                        ModelState.AddModelError(string.Empty, "User not found.");
+                        return Page();
+                    }
+                    if (string.IsNullOrEmpty(user.UserName) || string.IsNullOrEmpty(user.Email))
+                    {
+                        ModelState.AddModelError(string.Empty, "User data incomplete.");
+                        return Page();
+                    }
                     if (await _userManager.IsInRoleAsync(user, "Admin"))
                     {
                         return RedirectToAction("Dashboard", "Admin", new { area = "AdminArea" });

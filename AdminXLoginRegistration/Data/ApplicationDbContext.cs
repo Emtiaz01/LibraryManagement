@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AdminXLoginRegistration.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -12,6 +12,5 @@ namespace AdminXLoginRegistration.Data
         }
         public DbSet<Category> Category { get; set; }
         public DbSet<Product> Product { get; set; } 
-        // public DbSet<Role> Role {  get; set; }
     }
 }

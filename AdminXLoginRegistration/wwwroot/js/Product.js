@@ -41,7 +41,7 @@ function DeleteProduct(id) {
             type: 'DELETE',
             success: function (result) {
                 alert("Product deleted successfully.");
-                $('#ProductTable').DataTable().ajax.reload(); // Refresh table
+                $('#ProductTable').DataTable().ajax.reload();
             },
             error: function (xhr) {
                 alert("Error deleting product: " + xhr.responseText);

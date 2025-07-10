@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
+﻿using LibraryManagementSystem.Models;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Identity;
 
 namespace LibraryManagementSystem.Services
@@ -8,7 +9,7 @@ namespace LibraryManagementSystem.Services
         public static async Task InitializeAsync(IServiceProvider serviceProvider)
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
             string[] roles = { "Admin", "Manager", "Customer" };
 
@@ -26,7 +27,7 @@ namespace LibraryManagementSystem.Services
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
             if (adminUser == null)
             {
-                var user = new IdentityUser { UserName = adminEmail, Email = adminEmail, EmailConfirmed = true };
+                var user = new ApplicationUser { UserName = adminEmail, Email = adminEmail, EmailConfirmed = true };
                 await userManager.CreateAsync(user, adminPassword);
                 await userManager.AddToRoleAsync(user, "Admin");
             }
