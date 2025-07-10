@@ -43,7 +43,11 @@
                 <input asp-for="Product.ProductPrice" class="form-control" />
                 <span asp-validation-for="Product.ProductPrice" class="text-danger"></span>
             </div>
-
+            <div class="mb-3">
+                <label asp-for="Product.ProductQuantity" class="form-label"></label>
+                <input asp-for="Product.ProductQuantity" class="form-control" type="number" min="0" step="1" />
+                <span asp-validation-for="Product.ProductQuantity" class="text-danger"></span>
+            </div>
             <div class="mb-3">
                 <label asp-for="Product.CategoryId" class="form-label">Category</label>
                 <select asp-for="Product.CategoryId" asp-items="Model.CategoryList" class="form-select">

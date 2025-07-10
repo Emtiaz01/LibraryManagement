@@ -7,13 +7,13 @@
         },
         columns: [
             { data: 'productName' },
-            { data: 'description' },
             { data: 'productISBN'},
             { data: 'productAuthor'},
             {
                 data: 'productPrice',
                 render: $.fn.dataTable.render.number(',', '.', 2, '৳ ')
             },
+            { data: 'productQuantity' },
             { data: 'category.categoryName'},
             {
                 data: 'productId',

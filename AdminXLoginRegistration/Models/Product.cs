@@ -17,6 +17,8 @@ namespace LibraryManagementSystem.Models
         [Required]
         public string ProductAuthor { get; set; }
         [Required]
+        public int ProductQuantity { get; set; }
+        [Required]
         [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
         public double ProductPrice { get; set; }
         [Range(1, int.MaxValue, ErrorMessage = "Please select a category")]
