@@ -18,5 +18,10 @@ namespace LibraryManagementSystem.Areas.CustomerArea.Controllers
             IEnumerable<Product> productList = _context.Product.Include(p=>p.Category).ToList();
             return View(productList);
         }
+        public IActionResult Details(int id)
+        {
+            var product = _context.Product.Include(p => p.Category).FirstOrDefault(p => p.ProductId == id);
+            return View(product);
+        }
     }
 }
