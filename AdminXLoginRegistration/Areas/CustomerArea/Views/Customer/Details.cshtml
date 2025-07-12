@@ -1,4 +1,5 @@
-﻿@{
+﻿@model LibraryManagementSystem.ViewModel.BookLoanViewModel
+@{
     Layout = "~/Views/Shared/_AdminPage.cshtml";
 }
 
@@ -7,8 +8,8 @@
         <div class="card-header bg-secondary bg-gradient text-light py-4">
             <div class="row">
                 <div class="col-12 text-center">
-                    <h3 class="text-white text-uppercase">@Model.ProductName</h3>
-                    <p class="text-white-50 fw-semibold mb-0">@Model.ProductAuthor</p>
+                    <h3 class="text-white text-uppercase">@Model?.Product?.ProductName</h3>
+                    <p class="text-white-50 fw-semibold mb-0">@Model?.Product?.ProductAuthor</p>
                 </div>
             </div>
         </div>
@@ -23,15 +24,15 @@
                 </div>
                 <div class="row">
                     <div class="col-12 col-lg-3 offset-lg-1 text-center mb-3">
-                        <img src=@Model.ProductImage class="rounded" style="width:280px; height:400px;" />
+                        <img src=@Model?.Product?.ProductImage class="rounded" style="width:280px; height:400px;" />
                     </div>
                     <div class="col-12 col-lg-6 offset-lg-1">
 
                         <div class="col-12 col-md-6 pb-4">
-                            <span class="badge">@Model.Category.CategoryName</span>
+                            <span class="badge">@Model?.Product?.Category.CategoryName</span>
                         </div>
                         <div class="row ps-2">
-                            <h6 class="text-dark text-opacity-50 ">ISBN : @Model.ProductISBN</h6>
+                            <h6 class="text-dark text-opacity-50 ">ISBN : @Model?.Product?.ProductISBN</h6>
                         </div>
                         <div class="row ps-2">
                             <h6 class="text-dark text-opacity-50  pb-2">
@@ -54,37 +55,74 @@
                                 <div>Price</div>
                             </div>
                             <div class="p-1 col-3 col-lg-2 bg-white text-warning fw-bold">
-                                <div>৳@Model.ProductPrice</div>
+                                <div>৳@Model?.Product?.ProductPrice</div>
                             </div>
                         </div>
                         <div class="row pl-2 my-3">
-                            <p class="text-secondary lh-sm">@Html.Raw(Model.Description)</p>
+                            <p class="text-secondary lh-sm">@Html.Raw(Model?.Product?.Description)</p>
                         </div>
-                        @* <div class="row pl-2 mb-3">
-                            <div class="col-md-4">
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text bg-primary text-white border-0 fw-semibold"
-                                          id="inputGroup-sizing-default">
-                                        Count
-                                    </span>
-                                    <input type="number" value="1" class="form-control text-end"
-                                           aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
-
-                                </div>
-                            </div>
-                        </div> *@
                         <div class="row">
                             <div class="col-12 col-md-6 pb-1">
-                                <button type="submit"
-                                        class="btn btn-primary bg-gradient  w-100 py-2 text-uppercase fw-semibold">
+                                <button type="button" class="btn btn-primary w-100 py-2 text-uppercase fw-semibold"
+                                        data-bs-toggle="modal" data-bs-target="#borrowModal">
                                     Borrow Now
                                 </button>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
 </form>
+
+<div class="modal fade" id="borrowModal" tabindex="-1" aria-labelledby="borrowModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-area="CustomerArea" asp-action="BorrowBook" asp-controller="Customer" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="borrowModalLabel">Confirm Borrow</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" asp-for="BookLoan.ProductId" />
+                    <input type="hidden" asp-for="BookLoan.UserId" />
+                    <div class="form-group mb-3">
+                        <label asp-for="BookLoan.BorrowDate">Borrow Date</label>
+                        <input type="date" asp-for="BookLoan.BorrowDate" class="form-control"/>
+                        <span asp-validation-for="BookLoan.BorrowDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="BookLoan.DueDate">Due Date</label>
+                        <input type="date" asp-for="BookLoan.DueDate" class="form-control"/>
+                        <span asp-validation-for="BookLoan.DueDate" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Confirm</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var message = '@TempData["Error"]';
+            if (message) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: message,
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    </script>
+}

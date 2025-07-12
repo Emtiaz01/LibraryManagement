@@ -12,5 +12,6 @@ namespace AdminXLoginRegistration.Data
         }
         public DbSet<Category> Category { get; set; }
         public DbSet<Product> Product { get; set; } 
-    }
+        public DbSet<BookLoan> BookLoan { get; set; }
+}
 }
