@@ -64,8 +64,9 @@
                         <div class="row">
                             <div class="col-12 col-md-6 pb-1">
                                 <button type="button" class="btn btn-primary w-100 py-2 text-uppercase fw-semibold"
-                                        data-bs-toggle="modal" data-bs-target="#borrowModal">
-                                    Borrow Now
+                                        data-bs-toggle="modal" data-bs-target="#borrowModal"
+                                        @(Model.BookLoan != null ? "disabled" : "")>
+                                    @(Model.BookLoan != null ? "Return first" : "Borrow Now")
                                 </button>
                             </div>
                         </div>

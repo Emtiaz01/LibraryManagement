@@ -19,13 +19,25 @@ namespace LibraryManagementSystem.Areas.CustomerArea.Controllers
         }
         public IActionResult Index()
         {
-            IEnumerable<Product> productList = _context.Product.Include(p=>p.Category).ToList();
-            return View(productList);
+            var userId = _user.GetUserId(User);
+            ViewBag.CurrentUserId = userId;
+
+            var viewModelList = _context.Product
+                .Include(p => p.Category)
+                .Select(p => new BookLoanViewModel
+                {
+                    Product = p,
+                    BookLoan = _context.BookLoan
+                        .FirstOrDefault(bl => bl.ProductId == p.ProductId && bl.UserId == userId && bl.ReturnDate == null)
+                })
+                .ToList();
+
+            return View(viewModelList);
         }
         public IActionResult Details(int id)
         {
             var product = _context.Product.Include(p => p.Category).FirstOrDefault(p => p.ProductId == id);
-            if(product == null)
+            if (product == null)
             {
                 return NotFound();
             }
@@ -45,7 +57,7 @@ namespace LibraryManagementSystem.Areas.CustomerArea.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult BorrowBook(BookLoanViewModel vm)
         {
-            
+
             if (!ModelState.IsValid)
             {
                 var product = _context.Product.Include(p => p.Category)

@@ -1,45 +1,106 @@
-﻿@{
+﻿@model IEnumerable<LibraryManagementSystem.ViewModel.BookLoanViewModel>
+
+@{
     Layout = "~/Views/Shared/_AdminPage.cshtml";
 }
+
 <div class="row pb-3">
     @foreach (var product in Model)
     {
         <div class="col-lg-3 col-sm-6 mb-4">
             <div class="card border-0 p-3 shadow border-top border-5 rounded h-100">
-                <img src="@product.ProductImage" class="card-img-top rounded" style="height: 250px;" />
+                <img src="@product.Product.ProductImage" class="card-img-top rounded" style="height: 250px;" />
 
                 <div class="card-body d-flex flex-column justify-content-between">
                     <div class="text-center">
-                        <p class="card-title h5 text-dark opacity-75 text-uppercase">@product.ProductName</p>
-                        <p class="card-title text-warning mb-2">by <b>@product.ProductAuthor</b></p>
+                        <p class="card-title h5 text-dark opacity-75 text-uppercase">@product.Product.ProductName</p>
+                        <p class="card-title text-warning mb-2">by <b>@product.Product.ProductAuthor</b></p>
                     </div>
 
                     <div class="text-center">
                         <hr />
                         <p class="card-text h5 text-dark">
-                            @if (product.ProductPrice == 0)
+                            @if (product.Product.ProductPrice == 0)
                             {
                                 <span class="text-success">Free</span>
                             }
                             else
                             {
-                                <span class="text-danger">৳@product.ProductPrice</span>
+                                <span class="text-danger">৳@product.Product.ProductPrice</span>
                             }
                         </p>
                     </div>
+
                     <div class="mt-3">
                         <a asp-area="CustomerArea" asp-controller="Customer"
                            asp-action="Details"
-                           asp-route-id="@product.ProductId"
+                           asp-route-id="@product.Product.ProductId"
                            class="btn btn-primary bg-gradient border-0 form-control">
                             Details
                         </a>
+                    </div>
+
+                    <div class="mt-2">
+                        @if (product.BookLoan == null)
+                        {
+                            <button type="button"
+                                    class="btn btn-primary w-100 py-2 text-uppercase fw-semibold"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#borrowModal"
+                                    data-product-id="@product.Product.ProductId"
+                                    data-user-id="@ViewBag.CurrentUserId">
+                                Borrow Now
+                            </button>
+                        }
+                        else
+                        {
+                            <form asp-controller="Loan" asp-action="Return" method="post">
+                                <input type="hidden" name="BookLoanId" value="@product.BookLoan.BookLoanId" />
+                                <button type="submit" class="btn btn-warning bg-gradient border-0 form-control">
+                                    Return
+                                </button>
+                            </form>
+                        }
                     </div>
                 </div>
             </div>
         </div>
     }
 </div>
+
+<!-- Borrow Modal -->
+<div class="modal fade" id="borrowModal" tabindex="-1" aria-labelledby="borrowModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-area="CustomerArea" asp-action="BorrowBook" asp-controller="Customer" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="borrowModalLabel">Confirm Borrow</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" name="BookLoan.ProductId" id="ProductId" />
+                    <input type="hidden" name="BookLoan.UserId" id="UserId" />
+                    <div class="form-group mb-3">
+                        <label for="BorrowDate">Borrow Date</label>
+                        <input type="date" name="BookLoan.BorrowDate" class="form-control" required />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="DueDate">Due Date</label>
+                        <input type="date" name="BookLoan.DueDate" class="form-control" required />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Confirm</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
         $(document).ready(function () {
@@ -53,6 +114,16 @@
                     confirmButtonText: 'OK'
                 });
             }
+
+            // Set ProductId when modal opens
+                    $('#borrowModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var productId = button.data('product-id');
+            var userId = button.data('user-id');  // This must be set in ViewBag or model
+
+            $('#ProductId').val(productId);
+            $('#UserId').val(userId);
+        });
         });
     </script>
 }
