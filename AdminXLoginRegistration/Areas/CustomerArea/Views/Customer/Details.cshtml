@@ -63,7 +63,7 @@
                         </div>
                         <div class="row">
                             <div class="col-12 col-md-6 pb-1">
-                                @if(Model?.BookLoan == null)
+                                @if(Model?.BookLoan == null && Model?.Product.ProductQuantity>0)
                                 {
                                     <button type="button"
                                             class="btn btn-primary w-100 py-2 text-uppercase fw-semibold"
@@ -73,6 +73,21 @@
                                             data-user-id="@ViewBag.CurrentUserId">
                                         Borrow Now
                                     </button>
+                                }
+                                else if (Model?.BookLoan == null && Model?.Product.ProductQuantity == 0)
+                                {
+                                    <div class="alert alert-warning text-center fw-semibold">
+                                        This book is currently unavailable.<br />
+                                        @if (ViewBag.NextAvailableDate != null)
+                                        {
+                                            <span>Earliest expected return: <strong>@(((DateTime)ViewBag.NextAvailableDate).ToString("dd MMMM yyyy"))</strong></span>
+
+                                        }
+                                        else
+                                        {
+                                            <span>No return information available.</span>
+                                        }
+                                    </div>
                                 }
                                 else
                                 {

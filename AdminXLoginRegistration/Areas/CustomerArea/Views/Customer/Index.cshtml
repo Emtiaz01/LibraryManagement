@@ -41,7 +41,7 @@
                     </div>
 
                     <div class="mt-2">
-                        @if (product.BookLoan == null)
+                        @if (product.BookLoan == null && product.Product.ProductQuantity>0)
                         {
                             <button type="button"
                                     class="btn btn-primary w-100 py-2 text-uppercase fw-semibold"
@@ -51,6 +51,22 @@
                                     data-user-id="@ViewBag.CurrentUserId">
                                 Borrow Now
                             </button>
+                        }
+                        else if (product.BookLoan == null && product.Product.ProductQuantity == 0)
+                        {
+                            <div class="alert alert-warning text-center fw-semibold mt-2">
+                                This book is currently unavailable.<br />
+                                @if (product.NextAvailableDate != null)
+                                {
+                                    <span>
+                                        Earliest expected return: <strong>@product.NextAvailableDate?.ToString("dd MMMM yyyy")</strong>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span>No return information available.</span>
+                                }
+                            </div>
                         }
                         else
                         {

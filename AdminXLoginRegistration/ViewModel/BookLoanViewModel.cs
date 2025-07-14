@@ -8,5 +8,6 @@ namespace LibraryManagementSystem.ViewModel
         [ValidateNever]
         public Product Product { get; set; }
         public BookLoan? BookLoan { get; set; } = new BookLoan();
+        public DateTime? NextAvailableDate { get; set; }
     }
 }

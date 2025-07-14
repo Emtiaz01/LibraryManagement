@@ -28,7 +28,14 @@ namespace LibraryManagementSystem.Areas.CustomerArea.Controllers
                 {
                     Product = p,
                     BookLoan = _context.BookLoan
-                        .FirstOrDefault(bl => bl.ProductId == p.ProductId && bl.UserId == userId && bl.ReturnDate == null)
+                        .FirstOrDefault(bl => bl.ProductId == p.ProductId && bl.UserId == userId && bl.ReturnDate == null),
+                        NextAvailableDate = p.ProductQuantity == 0
+                ? _context.BookLoan
+                    .Where(bl => bl.ProductId == p.ProductId && bl.ReturnDate == null)
+                    .OrderBy(bl => bl.DueDate)
+                    .Select(bl => bl.DueDate)
+                    .FirstOrDefault()
+                : null
                 })
                 .ToList();
 
@@ -50,6 +57,13 @@ namespace LibraryManagementSystem.Areas.CustomerArea.Controllers
 
             var existingLoan = _context.BookLoan
                 .FirstOrDefault(bl => bl.ProductId == id && bl.UserId == userId && bl.ReturnDate == null);
+
+            var nextAvailableDate = _context.BookLoan
+        .Where(bl => bl.ProductId == id && bl.ReturnDate == null)
+        .OrderBy(bl => bl.DueDate)
+        .Select(bl => bl.DueDate)
+        .FirstOrDefault();
+            ViewBag.NextAvailableDate = nextAvailableDate;
 
             var viewModel = new BookLoanViewModel
             {
