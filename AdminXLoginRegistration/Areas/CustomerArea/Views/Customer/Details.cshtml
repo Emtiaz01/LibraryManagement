@@ -63,11 +63,23 @@
                         </div>
                         <div class="row">
                             <div class="col-12 col-md-6 pb-1">
-                                <button type="button" class="btn btn-primary w-100 py-2 text-uppercase fw-semibold"
-                                        data-bs-toggle="modal" data-bs-target="#borrowModal"
-                                        @(Model.BookLoan != null ? "disabled" : "")>
-                                    @(Model.BookLoan != null ? "Return first" : "Borrow Now")
-                                </button>
+                                @if(Model?.BookLoan == null)
+                                {
+                                    <button type="button"
+                                            class="btn btn-primary w-100 py-2 text-uppercase fw-semibold"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#borrowModal"
+                                            data-product-id="@Model?.Product.ProductId"
+                                            data-user-id="@ViewBag.CurrentUserId">
+                                        Borrow Now
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="button" class="btn btn-primary w-100 py-2 text-uppercase fw-semibold disabled">
+                                            Return First
+                                    </button>
+                                }
                             </div>
                         </div>
                     </div>
@@ -87,18 +99,16 @@
                 </div>
 
                 <div class="modal-body">
-                    <input type="hidden" asp-for="BookLoan.ProductId" />
-                    <input type="hidden" asp-for="BookLoan.UserId" />
+                    <input type="hidden" name="BookLoan.ProductId" id="ProductId" />
+                    <input type="hidden" name="BookLoan.UserId" id="UserId" />
                     <div class="form-group mb-3">
-                        <label asp-for="BookLoan.BorrowDate">Borrow Date</label>
-                        <input type="date" asp-for="BookLoan.BorrowDate" class="form-control"/>
-                        <span asp-validation-for="BookLoan.BorrowDate" class="text-danger"></span>
+                        <label for="BorrowDate">Borrow Date</label>
+                        <input type="date" name="BookLoan.BorrowDate" class="form-control" required />
                     </div>
 
                     <div class="form-group mb-3">
-                        <label asp-for="BookLoan.DueDate">Due Date</label>
-                        <input type="date" asp-for="BookLoan.DueDate" class="form-control"/>
-                        <span asp-validation-for="BookLoan.DueDate" class="text-danger"></span>
+                        <label for="DueDate">Due Date</label>
+                        <input type="date" name="BookLoan.DueDate" class="form-control" required />
                     </div>
                 </div>
 
@@ -124,6 +134,14 @@
                     confirmButtonText: 'OK'
                 });
             }
+            $('#borrowModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var productId = button.data('product-id');
+            var userId = button.data('user-id');  
+
+            $('#ProductId').val(productId);
+            $('#UserId').val(userId);
+        });
         });
     </script>
 }

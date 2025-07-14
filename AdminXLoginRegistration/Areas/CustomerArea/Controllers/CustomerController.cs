@@ -36,22 +36,30 @@ namespace LibraryManagementSystem.Areas.CustomerArea.Controllers
         }
         public IActionResult Details(int id)
         {
-            var product = _context.Product.Include(p => p.Category).FirstOrDefault(p => p.ProductId == id);
+            var product = _context.Product
+                .Include(p => p.Category)
+                .FirstOrDefault(p => p.ProductId == id);
+
             if (product == null)
             {
                 return NotFound();
             }
+
+            var userId = _user.GetUserId(User);
+            ViewBag.CurrentUserId = userId;
+
+            var existingLoan = _context.BookLoan
+                .FirstOrDefault(bl => bl.ProductId == id && bl.UserId == userId && bl.ReturnDate == null);
+
             var viewModel = new BookLoanViewModel
             {
                 Product = product,
-                BookLoan = new BookLoan
-                {
-                    ProductId = product.ProductId,
-                    UserId = _user.GetUserId(User),
-                }
+                BookLoan = existingLoan 
             };
+
             return View(viewModel);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -60,6 +68,7 @@ namespace LibraryManagementSystem.Areas.CustomerArea.Controllers
 
             if (!ModelState.IsValid)
             {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
                 var product = _context.Product.Include(p => p.Category)
                                               .FirstOrDefault(p => p.ProductId == vm.BookLoan.ProductId);
 
