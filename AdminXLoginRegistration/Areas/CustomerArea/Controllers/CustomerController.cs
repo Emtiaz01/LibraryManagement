@@ -102,5 +102,28 @@ namespace LibraryManagementSystem.Areas.CustomerArea.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ReturnBook(int? BookLoanId)
+        {
+            var loan = _context.BookLoan
+                .FirstOrDefault(bl => bl.BookLoanId == BookLoanId && bl.UserId == _user.GetUserId(User) && bl.ReturnDate==null);
+
+            if (loan == null)
+            {
+                return NotFound();
+            }
+            loan.ReturnDate = DateTime.Now;
+            var product = _context.Product
+                .FirstOrDefault(p => p.ProductId == loan.ProductId);
+            if (product != null)
+            {
+                product.ProductQuantity += 1;
+            }
+            //_context.BookLoan.Remove(loan);
+            _context.SaveChanges();
+            TempData["Success"] = "Book returned successfully!";
+            return RedirectToAction("Index");
+        }
     }
 }

@@ -52,6 +52,26 @@
                                 Borrow Now
                             </button>
                         }
+                        else if (product.BookLoan != null && product.Product.ProductQuantity > 0 && product.BookLoan.ReturnDate!=null)
+                        {
+                            <button type="button"
+                                    class="btn btn-primary w-100 py-2 text-uppercase fw-semibold"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#borrowModal"
+                                    data-product-id="@product.Product.ProductId"
+                                    data-user-id="@ViewBag.CurrentUserId">
+                                Borrow Now
+                            </button>
+                        }
+                        else if(product.BookLoan!=null && product?.BookLoan?.ReturnDate==null)
+                        {
+                            <form asp-area="CustomerArea" asp-controller="Customer" asp-action="ReturnBook" asp-route-id="Model.BookLoan.BookoanId" method="post">
+                                <input type="hidden" name="BookLoanId" value="@product?.BookLoan?.BookLoanId" />
+                                <button type="submit" class="btn btn-warning bg-gradient border-0 form-control">
+                                    Return
+                                </button>
+                            </form>
+                        }
                         else if (product.BookLoan == null && product.Product.ProductQuantity == 0)
                         {
                             <div class="alert alert-warning text-center fw-semibold mt-2">
@@ -68,15 +88,7 @@
                                 }
                             </div>
                         }
-                        else
-                        {
-                            <form asp-controller="Loan" asp-action="Return" method="post">
-                                <input type="hidden" name="BookLoanId" value="@product.BookLoan.BookLoanId" />
-                                <button type="submit" class="btn btn-warning bg-gradient border-0 form-control">
-                                    Return
-                                </button>
-                            </form>
-                        }
+
                     </div>
                 </div>
             </div>
