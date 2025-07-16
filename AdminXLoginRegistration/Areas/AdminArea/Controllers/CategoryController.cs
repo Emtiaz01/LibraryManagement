@@ -69,8 +69,8 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
             }
             return View(obj);
         }
-        [HttpPost]
-        [Route("AdminArea/Category/DeleteIT/{id}")]
+        
+        [HttpPost("AdminArea/Category/DeleteIT/{id}")]
         public IActionResult DeleteIT(int id)
         {
             var obj = _db.Category.FirstOrDefault(u => u.CategoryId == id);

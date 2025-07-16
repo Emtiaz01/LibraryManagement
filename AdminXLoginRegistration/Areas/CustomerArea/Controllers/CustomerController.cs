@@ -99,7 +99,10 @@ namespace LibraryManagementSystem.Areas.CustomerArea.Controllers
 
 
             vm.BookLoan.UserId = _user.GetUserId(User);
-            vm.BookLoan.Status = LoanStatus.Pending;
+            if(vm.BookLoan.Status!= LoanStatus.Pending)
+            {
+                vm.BookLoan.Status = LoanStatus.Pending;
+            }
             _context.BookLoan.Add(vm.BookLoan);
             _context.SaveChanges();
 
@@ -125,6 +128,7 @@ namespace LibraryManagementSystem.Areas.CustomerArea.Controllers
             {
                 product.ProductQuantity += 1;
             }
+            loan.Status = LoanStatus.Nothing;
             //_context.BookLoan.Remove(loan);
             _context.SaveChanges();
             TempData["Success"] = "Book returned successfully!";

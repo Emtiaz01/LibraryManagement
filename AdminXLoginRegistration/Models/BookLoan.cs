@@ -6,7 +6,7 @@ namespace LibraryManagementSystem.Models
 {
     public enum LoanStatus
     {
-        Pending, Approved, Rejected
+        Nothing,Pending, Approved, Rejected
     }
     public class BookLoan
     {
@@ -34,7 +34,7 @@ namespace LibraryManagementSystem.Models
         public DateTime DueDate { get; set; }
 
         public DateTime? ReturnDate { get; set; }
-        public LoanStatus Status { get; set; } = LoanStatus.Pending;
+        public LoanStatus Status { get; set; } = LoanStatus.Nothing;
 
         [NotMapped]
         public bool IsReturned => ReturnDate.HasValue;
