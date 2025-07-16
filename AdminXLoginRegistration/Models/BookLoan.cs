@@ -4,6 +4,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LibraryManagementSystem.Models
 {
+    public enum LoanStatus
+    {
+        Pending, Approved, Rejected
+    }
     public class BookLoan
     {
         [Key]
@@ -30,6 +34,7 @@ namespace LibraryManagementSystem.Models
         public DateTime DueDate { get; set; }
 
         public DateTime? ReturnDate { get; set; }
+        public LoanStatus Status { get; set; } = LoanStatus.Pending;
 
         [NotMapped]
         public bool IsReturned => ReturnDate.HasValue;

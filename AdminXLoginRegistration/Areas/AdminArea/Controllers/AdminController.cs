@@ -1,9 +1,11 @@
-﻿using LibraryManagementSystem.Models;
+﻿using AdminXLoginRegistration.Data;
+using LibraryManagementSystem.Models;
 using LibraryManagementSystem.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace LibraryManagementSystem.Areas.AdminArea.Controllers
@@ -12,12 +14,14 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
     //[Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
+        public readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _user;
         private readonly RoleManager<IdentityRole> _role;
-        public AdminController(UserManager<ApplicationUser> user, RoleManager<IdentityRole> role)
+        public AdminController(ApplicationDbContext context, UserManager<ApplicationUser> user, RoleManager<IdentityRole> role)
         {
             _user = user;
             _role = role;
+            _context = context;
         }
         [HttpGet]
         public IActionResult Dashboard()
@@ -89,5 +93,53 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
 
             return Ok(new { message = "Role updated successfully." });
         }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ApproveRequest(int id)
+        {
+            var request = _context.BookLoan
+                .Include(bl => bl.Product)
+                .FirstOrDefault(bl => bl.BookLoanId == id);
+
+            if (request == null || request.Status != LoanStatus.Pending)
+            {
+                return NotFound();
+            }
+
+            // Approve the request
+            request.Status = LoanStatus.Approved;
+
+            // Reduce stock
+            if (request.Product.ProductQuantity > 0)
+            {
+                request.Product.ProductQuantity -= 1;
+            }
+
+            _context.SaveChanges();
+            TempData["Success"] = "Request approved.";
+            return RedirectToAction("Dashboard", "Admin", new { area = "AdminArea" });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult RejectRequest(int id)
+        {
+            var request = _context.BookLoan.FirstOrDefault(bl => bl.BookLoanId == id);
+
+            if (request == null || request.Status != LoanStatus.Pending)
+            {
+                return NotFound();
+            }
+
+            // Reject the request
+            request.Status = LoanStatus.Rejected;
+
+            _context.SaveChanges();
+            TempData["Warning"] = "Request rejected.";
+            return RedirectToAction("Dashboard", "Admin", new { area = "AdminArea" });
+        }
+
     }
 }

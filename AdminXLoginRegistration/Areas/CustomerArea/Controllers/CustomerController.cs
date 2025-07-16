@@ -79,7 +79,11 @@ namespace LibraryManagementSystem.Areas.CustomerArea.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult BorrowBook(BookLoanViewModel vm)
         {
-
+            if(!User.Identity.IsAuthenticated)
+            {
+                TempData["Error"] = "You must be logged in to borrow a book.";
+                return RedirectToAction("Login", "Account", new { area = "Identity" });
+            }
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
@@ -93,12 +97,13 @@ namespace LibraryManagementSystem.Areas.CustomerArea.Controllers
             var productToUpdate = _context.Product.Include(p => p.Category)
                                               .FirstOrDefault(p => p.ProductId == vm.BookLoan.ProductId);
 
-            productToUpdate.ProductQuantity -= 1;
+
             vm.BookLoan.UserId = _user.GetUserId(User);
+            vm.BookLoan.Status = LoanStatus.Pending;
             _context.BookLoan.Add(vm.BookLoan);
             _context.SaveChanges();
 
-            TempData["Success"] = "Book borrowed successfully!";
+            TempData["Success"] = "You Borrow Request has sent to Admin";
             return RedirectToAction("Index");
         }
 

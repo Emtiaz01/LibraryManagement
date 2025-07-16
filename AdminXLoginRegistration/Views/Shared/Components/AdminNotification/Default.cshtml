@@ -1,0 +1,39 @@
+﻿@model LibraryManagementSystem.ViewModel.AdminNotificationViewModel
+
+<li class="nav-item dropdown">
+    <a class="nav-link" data-bs-toggle="dropdown" href="#">
+        <i class="bi bi-bell-fill"></i>
+        <span class="navbar-badge badge text-bg-warning">@Model.PendingCount</span>
+    </a>
+    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+        <span class="dropdown-item dropdown-header">@Model.PendingCount Pending Requests</span>
+        <div class="dropdown-divider"></div>
+
+        @foreach (var request in Model.PendingRequests)
+        {
+            <div class="dropdown-item">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <strong>@request.Product.ProductName</strong> - by <em>@request.User.UserName</em><br />
+                        <small class="text-secondary">@request.BorrowDate.ToShortDateString()</small>
+                    </div>
+                    <div class="ms-2">
+                        <form asp-area="AdminArea" asp-controller="Admin" asp-action="ApproveRequest" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@request.BookLoanId" />
+                            <button type="submit" class="btn btn-sm btn-success">✓</button>
+                        </form>
+                        <form asp-area="AdminArea" asp-controller="Admin" asp-action="RejectRequest" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@request.BookLoanId" />
+                            <button type="submit" class="btn btn-sm btn-danger">✕</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="dropdown-divider"></div>
+        }
+
+        <a href="@Url.Action("AllPendingRequests", "Admin", new { area = "AdminArea" })" class="dropdown-item dropdown-footer">
+            See All Requests
+        </a>
+    </div>
+</li>
