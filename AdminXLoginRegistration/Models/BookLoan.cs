@@ -6,7 +6,7 @@ namespace LibraryManagementSystem.Models
 {
     public enum LoanStatus
     {
-        Nothing,Pending, Approved, Rejected
+        Nothing,Pending, Approved, Rejected,ReturnPending, Returned
     }
     public class BookLoan
     {

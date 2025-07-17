@@ -41,108 +41,77 @@
                     </div>
 
                     <div class="mt-2">
-                        @if (product.BookLoan == null && product.Product.ProductQuantity > 0 && product?.BookLoan?.Status == LoanStatus.Nothing)
+                        @if (product.BookLoan == null)
                         {
-                            <button type="button"
-                                    class="btn btn-primary w-100 py-2 text-uppercase fw-semibold"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#borrowModal"
-                                    data-product-id="@product.Product.ProductId"
-                                    data-user-id="@ViewBag.CurrentUserId">
-                                Borrow Now
-                            </button>
+                            if (product.Product.ProductQuantity > 0)
+                            {
+                                <button type="button"
+                                        class="btn btn-primary w-100 py-2 text-uppercase fw-semibold"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#borrowModal"
+                                        data-product-id="@product.Product.ProductId"
+                                        data-user-id="@ViewBag.CurrentUserId">
+                                    Borrow Now
+                                </button>
+                            }
+                            else
+                            {
+                                <div class="alert alert-warning text-center fw-semibold mt-2">
+                                    This book is currently unavailable.<br />
+                                    @if (product.NextAvailableDate != null)
+                                    {
+                                        <span>
+                                            Earliest expected return: <strong>@product.NextAvailableDate?.ToString("dd MMMM yyyy")</strong>
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span>No return information available.</span>
+                                    }
+                                </div>
+                            }
                         }
-                        else if (product?.BookLoan == null && product?.Product.ProductQuantity > 0)
+                        else if (product.BookLoan.Status == LoanStatus.Pending)
                         {
-                            <button type="button"
-                                    class="btn btn-primary w-100 py-2 text-uppercase fw-semibold"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#borrowModal"
-                                    data-product-id="@product.Product.ProductId"
-                                    data-user-id="@ViewBag.CurrentUserId">
-                                Borrow Now
-                            </button>
-                        }
-                        
-                        else if (product?.BookLoan != null && product.Product.ProductQuantity > 0 && product?.BookLoan?.Status == LoanStatus.Nothing)
-                        {
-                            <button type="button"
-                                    class="btn btn-primary w-100 py-2 text-uppercase fw-semibold"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#borrowModal"
-                                    data-product-id="@product.Product.ProductId"
-                                    data-user-id="@ViewBag.CurrentUserId">
-                                Borrow Now
-                            </button>
-                        }
-                        else if (product?.BookLoan != null && product.Product.ProductQuantity > 0 && product.BookLoan.Status==LoanStatus.Rejected)
-                        {
-                            <button type="button"
-                                    class="btn btn-primary w-100 py-2 text-uppercase fw-semibold"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#borrowModal"
-                                    data-product-id="@product.Product.ProductId"
-                                    data-user-id="@ViewBag.CurrentUserId">
-                                Borrow Now
-                            </button>
-                        }
-                        else if (product?.BookLoan != null && product.BookLoan.Status==LoanStatus.Pending)
-                        {
+
                             <div class="alert alert-warning text-center fw-semibold mt-2">
                                 <span>Request Pending</span>
                             </div>
-                            
                         }
-                        else if(product?.BookLoan!=null && product.BookLoan.Status==LoanStatus.Approved && product?.BookLoan?.ReturnDate==null)
+                        else if (product.BookLoan.Status == LoanStatus.Approved && product.BookLoan.ReturnDate == null)
                         {
-                            <form asp-area="CustomerArea" asp-controller="Customer" asp-action="ReturnBook" asp-route-id="Model.BookLoan.BookoanId" method="post">
-                                <input type="hidden" name="BookLoanId" value="@product?.BookLoan?.BookLoanId" />
+                            <form asp-area="CustomerArea" asp-controller="Customer" asp-action="ReturnBook" method="post">
+                                <input type="hidden" name="BookLoanId" value="@product.BookLoan.BookLoanId" />
                                 <button type="submit" class="btn btn-warning bg-gradient border-0 form-control">
                                     Return
                                 </button>
                             </form>
                         }
-                        else if (product?.BookLoan == null && product?.Product.ProductQuantity == 0)
+                        else if (product.BookLoan.Status == LoanStatus.Rejected)
                         {
-                            <div class="alert alert-warning text-center fw-semibold mt-2">
-                                This book is currently unavailable.<br />
-                                @if (product.NextAvailableDate != null)
-                                {
-                                    <span>
-                                        Earliest expected return: <strong>@product.NextAvailableDate?.ToString("dd MMMM yyyy")</strong>
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span>No return information available.</span>
-                                }
+                            <button type="button"
+                                    class="btn btn-primary w-100 py-2 text-uppercase fw-semibold"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#borrowModal"
+                                    data-product-id="@product.Product.ProductId"
+                                    data-user-id="@ViewBag.CurrentUserId">
+                                Borrow Now
+                            </button>
+                        }
+                        else if (product.BookLoan.Status == LoanStatus.ReturnPending)
+                        {
+                            <div class="alert alert-info text-center fw-semibold mt-2">
+                                <span>Return request is pending admin approval.</span>
                             </div>
                         }
-                        else if (product?.BookLoan != null && product.Product.ProductQuantity == 0)
-                        {
-                            <div class="alert alert-warning text-center fw-semibold mt-2">
-                                This book is currently unavailable.<br />
-                                @if (product.NextAvailableDate != null)
-                                {
-                                    <span>
-                                        Earliest expected return: <strong>@product.NextAvailableDate?.ToString("dd MMMM yyyy")</strong>
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span>No return information available.</span>
-                                }
-                            </div>
-                        }
-
                     </div>
+
                 </div>
             </div>
         </div>
     }
 </div>
 
-<!-- Borrow Modal -->
 <div class="modal fade" id="borrowModal" tabindex="-1" aria-labelledby="borrowModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -189,7 +158,6 @@
                 });
             }
 
-            // Set ProductId when modal opens
                     $('#borrowModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget);
             var productId = button.data('product-id');

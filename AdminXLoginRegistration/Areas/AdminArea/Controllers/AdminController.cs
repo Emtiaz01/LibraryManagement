@@ -107,11 +107,7 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
             {
                 return NotFound();
             }
-
-            // Approve the request
             request.Status = LoanStatus.Approved;
-
-            // Reduce stock
             if (request.Product.ProductQuantity > 0)
             {
                 request.Product.ProductQuantity -= 1;
@@ -133,12 +129,45 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
                 return NotFound();
             }
 
-            // Reject the request
             request.Status = LoanStatus.Rejected;
 
             _context.SaveChanges();
             TempData["Warning"] = "Request rejected.";
             return RedirectToAction("Dashboard", "Admin", new { area = "AdminArea" });
+        }
+
+        [HttpGet]
+        public IActionResult ReturnRequest()
+        {
+            var request = _context.BookLoan.Where(u => u.Status == LoanStatus.ReturnPending)
+                .Include(u => u.Product).Include(u => u.User).
+                Select(u => new ReturnRequestViewModel
+                {
+                    BookLoanId = u.BookLoanId,
+                    ProductName = u.Product.ProductName,
+                    UserName = u.User.UserName,
+                    BorrowDate = u.BorrowDate,
+                    DueDate = u.DueDate
+                }).ToList();
+
+            return View(request);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ApproveReturn(int? id)
+        {
+            var loan = _context.BookLoan.FirstOrDefault(u => u.BookLoanId == id && u.Status == LoanStatus.ReturnPending);
+            if(loan == null)
+            {
+                return NotFound();
+            }
+            loan.Status = LoanStatus.Returned;
+            var product = _context.Product.FirstOrDefault(u => u.ProductId == loan.ProductId);
+            product.ProductQuantity += 1;
+            _context.SaveChanges();
+            TempData["Success"] = "Book return approved.";
+            return RedirectToAction("ReturnRequest");   
         }
 
     }

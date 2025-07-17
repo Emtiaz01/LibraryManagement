@@ -28,8 +28,14 @@ namespace LibraryManagementSystem.Areas.CustomerArea.Controllers
                 {
                     Product = p,
                     BookLoan = _context.BookLoan
-                        .FirstOrDefault(bl => bl.ProductId == p.ProductId && bl.UserId == userId && bl.ReturnDate == null),
-                        NextAvailableDate = p.ProductQuantity == 0
+                    .Where(bl => bl.ProductId == p.ProductId && bl.UserId == userId &&
+                     (bl.Status == LoanStatus.Pending || 
+                     bl.Status == LoanStatus.Approved ||
+                     bl.Status == LoanStatus.Rejected ||
+                     bl.Status == LoanStatus.ReturnPending))
+                        .OrderByDescending(bl => bl.BookLoanId)
+                        .FirstOrDefault(),
+                    NextAvailableDate = p.ProductQuantity == 0
                 ? _context.BookLoan
                     .Where(bl => bl.ProductId == p.ProductId && bl.ReturnDate == null)
                     .OrderBy(bl => bl.DueDate)
@@ -121,17 +127,11 @@ namespace LibraryManagementSystem.Areas.CustomerArea.Controllers
             {
                 return NotFound();
             }
-            loan.ReturnDate = DateTime.Now;
-            var product = _context.Product
-                .FirstOrDefault(p => p.ProductId == loan.ProductId);
-            if (product != null)
-            {
-                product.ProductQuantity += 1;
-            }
-            loan.Status = LoanStatus.Nothing;
-            //_context.BookLoan.Remove(loan);
+            loan.Status = LoanStatus.ReturnPending;
+
+
             _context.SaveChanges();
-            TempData["Success"] = "Book returned successfully!";
+            TempData["Success"] = "Your Return Request Has Been Sent Successfully!";
             return RedirectToAction("Index");
         }
     }

@@ -1,0 +1,47 @@
+﻿@model IEnumerable<LibraryManagementSystem.ViewModel.ReturnRequestViewModel>
+@{
+    ViewBag.Title = "Pending Return Requests";
+    Layout = "~/Views/Shared/_AdminPage.cshtml";
+}
+
+<h2 class="mb-4">Pending Return Requests</h2>
+
+@if (Model.Any())
+{
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Book</th>
+                <th>User</th>
+                <th>Borrowed On</th>
+                <th>Due Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var request in Model)
+            {
+                <tr>
+                    <td>@request.ProductName</td>
+                    <td>@request.UserName</td>
+                    <td>@request.BorrowDate.ToString("dd MMM yyyy")</td>
+                    <td>@request.DueDate?.ToString("dd MMM yyyy")</td>
+                    <td>
+                        <form asp-action="ApproveReturn" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@request.BookLoanId" />
+                            <button class="btn btn-sm btn-success" type="submit">✓ Approve</button>
+                        </form>
+                        <form asp-action="RejectReturn" method="post" class="d-inline ms-2">
+                            <input type="hidden" name="id" value="@request.BookLoanId" />
+                            <button class="btn btn-sm btn-danger" type="submit">✕ Reject</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info">No return requests at the moment.</div>
+}
