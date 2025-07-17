@@ -1,5 +1,6 @@
 ﻿using AdminXLoginRegistration.Data;
 using LibraryManagementSystem.Models;
+using LibraryManagementSystem.Services;
 using LibraryManagementSystem.ViewModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,10 +13,12 @@ namespace LibraryManagementSystem.Areas.CustomerArea.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _user;
-        public CustomerController(ApplicationDbContext context, UserManager<ApplicationUser> user)
+        private readonly IEmailService _emailService;
+        public CustomerController(ApplicationDbContext context, UserManager<ApplicationUser> user, IEmailService emailService)
         {
             _context = context;
             _user = user;
+            _emailService = emailService;
         }
         public IActionResult Index()
         {
@@ -83,7 +86,7 @@ namespace LibraryManagementSystem.Areas.CustomerArea.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult BorrowBook(BookLoanViewModel vm)
+        public async Task<IActionResult>  BorrowBook(BookLoanViewModel vm)
         {
             if(!User.Identity.IsAuthenticated)
             {
@@ -111,6 +114,15 @@ namespace LibraryManagementSystem.Areas.CustomerArea.Controllers
             }
             _context.BookLoan.Add(vm.BookLoan);
             _context.SaveChanges();
+
+            var userID = vm.BookLoan.UserId;
+            var user = await _user.FindByIdAsync(userID);
+            var UserName = user?.UserName;   
+
+            var adminEmail = "naimur.cse213@gmail.com"; // Replace with real admin email
+            await _emailService.SendEmailAsync(adminEmail,
+                "New Borrow Request",
+                $"<strong>{UserName}</strong> has requested to borrow the book: <strong>{productToUpdate.ProductName}</strong>.");
 
             TempData["Success"] = "You Borrow Request has sent to Admin";
             return RedirectToAction("Index");

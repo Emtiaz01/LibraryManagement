@@ -1,5 +1,6 @@
 ﻿using AdminXLoginRegistration.Data;
 using LibraryManagementSystem.Models;
+using LibraryManagementSystem.Services;
 using LibraryManagementSystem.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -17,11 +18,14 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
         public readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _user;
         private readonly RoleManager<IdentityRole> _role;
-        public AdminController(ApplicationDbContext context, UserManager<ApplicationUser> user, RoleManager<IdentityRole> role)
+        private readonly IEmailService _emailService;
+        public AdminController(ApplicationDbContext context, UserManager<ApplicationUser> user,
+            RoleManager<IdentityRole> role, IEmailService emailService)
         {
             _user = user;
             _role = role;
             _context = context;
+            _emailService = emailService;
         }
         [HttpGet]
         public IActionResult Dashboard()
@@ -97,7 +101,7 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult ApproveRequest(int id)
+        public async Task<IActionResult>  ApproveRequest(int id)
         {
             var request = _context.BookLoan
                 .Include(bl => bl.Product)
@@ -114,6 +118,11 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
             }
 
             _context.SaveChanges();
+            var user = await _user.FindByIdAsync(request.UserId);
+
+            await _emailService.SendEmailAsync(user.Email,
+                "Borrow Request Approved",
+                $"Your request to borrow <strong>{request.Product.ProductName}</strong> has been approved. You may now access it.");
             TempData["Success"] = "Request approved.";
             return RedirectToAction("Dashboard", "Admin", new { area = "AdminArea" });
         }
