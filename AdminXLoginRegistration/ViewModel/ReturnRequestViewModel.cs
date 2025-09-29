@@ -1,4 +1,6 @@
-﻿namespace LibraryManagementSystem.ViewModel
+﻿using System;
+
+namespace LibraryManagementSystem.ViewModel
 {
     public class ReturnRequestViewModel
     {
@@ -7,5 +9,8 @@
         public string UserName { get; set; }
         public DateTime BorrowDate { get; set; }
         public DateTime? DueDate { get; set; }
+
+        // Add fine property
+        public double FineAmount { get; set; }
     }
 }

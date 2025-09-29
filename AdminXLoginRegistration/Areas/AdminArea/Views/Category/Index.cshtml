@@ -1,41 +1,75 @@
 ﻿@{
     Layout = "~/Views/Shared/_AdminPage.cshtml";
 }
-<div class="card shadow border-0 mt-4">
-    <div class="card-header bg-success bg-gradient ml-0 py-3">
-        <div class="row">
-            <div class="col-12 text-center">
-                <h2 class="text-white py-2">Category List</h2>
-            </div>
-        </div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+<style>
+    .bs23-section-header {
+        background: linear-gradient(90deg,#002e6d 80%,#0A5CA9 100%);
+        color: #fff;
+        border-top-left-radius: 14px;
+        border-top-right-radius: 14px;
+        margin-left: 0;
+        letter-spacing: 1px;
+        padding-top: 1.2rem !important;
+        padding-bottom: 1.2rem !important;
+        font-weight: 700;
+    }
+
+    .bs23-create-btn {
+        background: #0A5CA9;
+        color: #fff;
+        font-weight: 600;
+        border-radius: 6px;
+        border: none;
+        box-shadow: 0 3px 13px -7px #0A5CA9;
+        transition: background .2s;
+    }
+
+        .bs23-create-btn:hover {
+            background: #002e6d;
+            color: #fff;
+        }
+
+    .bs23-table thead {
+        background: #dde8f7;
+        color: #002e6d;
+        font-weight: 600;
+        letter-spacing: .7px;
+    }
+
+    .bs23-table td, .bs23-table th {
+        vertical-align: middle !important;
+    }
+</style>
+
+<div class="card shadow border-0 mt-4" style="border-radius:14px;">
+    <div class="card-header bs23-section-header text-center">
+        <h2 class="mb-0">Category List</h2>
     </div>
     <div class="card-body p-4">
-        <div class="row pb-3">
-            <div class="col-6">
+        <div class="row pb-3 align-items-center">
+            <div class="col-12 col-md-4">
+                @* <img src="~/images/bs23-logo.png" style="height:34px;width:auto;margin-bottom:7px;" alt="Brain Station 23 PLC Logo" /> *@
             </div>
-            <div class="col-6 text-end">
-                <a asp-controller="Category" asp-action="UpsertCategory" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i>  Create New Category
+            <div class="col-12 col-md-8 text-end">
+                <a asp-controller="Category" asp-action="UpsertCategory" class="btn bs23-create-btn">
+                    <i class="bi bi-plus-circle"></i> Create New Category
                 </a>
             </div>
         </div>
-
-        <table class="table table-bordered table-striped text-center" id="CategoryTable">
+        <table class="table table-bordered table-striped table-hover text-center bs23-table" id="CategoryTable" style="border-radius:7px;overflow:hidden;">
             <thead>
                 <tr>
-                    <th>
-                        Category Name
-                    </th>
-                    <th>
-                        Description
-                    </th>
-                    <th>Action</th>
+                    <th style="width:35%;">Category Name</th>
+                    <th style="width:45%;">Description</th>
+                    <th style="width:20%;">Action</th>
                 </tr>
             </thead>
+            <!-- The body will be loaded dynamically via JS -->
         </table>
-
     </div>
 </div>
-@section Scripts{
+
+@section Scripts {
     <script src="~/js/categoryview.js" asp-append-version="true"></script>
 }

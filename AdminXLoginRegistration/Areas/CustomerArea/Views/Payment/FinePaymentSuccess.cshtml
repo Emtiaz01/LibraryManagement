@@ -1,0 +1,116 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdminPage.cshtml";
+}
+
+@model LibraryManagementSystem.Models.Payment
+
+@{
+    var book = Model?.BookLoan?.Product;
+    var user = Model?.User;
+    string borrowDate = Model?.BookLoan?.BorrowDate.ToString("dd MMM yyyy") ?? "-";
+    string returnDate = Model?.BookLoan?.ReturnDate?.ToString("dd MMM yyyy") ?? "-";
+    string dueDate = Model?.BookLoan?.DueDate != null ? Model.BookLoan.DueDate.ToString("dd MMM yyyy") : "-";
+}
+
+<!-- Only the PDF invoice area below will be exported in the PDF -->
+<div style="display: flex; justify-content: center; align-items: flex-start;">
+    <div id="pdf-invoice" style="background:#fff;width:100%;max-width:850px;padding:38px 50px 30px 50px;margin:0;">
+        <div style="text-align:center;font-size:2.2rem;font-weight:800;color:#1976d2;margin-bottom:12px;">
+            Payment Invoice
+        </div>
+        <div style="text-align:center;font-size:1.14rem;color:#2785e2;font-weight:600;margin-bottom:14px;">
+            Transaction: @Model.TransactionId
+        </div>
+        <div style="text-align:center;margin-bottom:15px;">
+            @if (!string.IsNullOrEmpty(book?.ProductImage))
+            {
+                <img src="@book.ProductImage" alt="Cover"
+                     style="display:inline-block;width:105px;height:120px;object-fit:cover;margin-bottom:6px;" />
+            }
+        </div>
+        <table style="width:100%;margin-bottom:18px;font-size:1.17rem; margin-left: 170px">
+            <tr>
+                <td style="font-weight:600;color:#17497B;width:170px;">Book Name:</td>
+                <td id="book-name"><b>@book?.ProductName</b></td>
+            </tr>
+            <tr>
+                <td style="font-weight:600;color:#17497B;">Book Author:</td>
+                <td>@book?.ProductAuthor</td>
+            </tr>
+            <tr>
+                <td style="font-weight:600;color:#17497B;">Borrow Date:</td>
+                <td>@borrowDate</td>
+            </tr>
+            <tr>
+                <td style="font-weight:600;color:#17497B;">Due Date:</td>
+                <td>@dueDate</td>
+            </tr>
+            <tr>
+                <td style="font-weight:600;color:#17497B;">Return Date:</td>
+                <td>
+                    @{
+                        var status = Model?.BookLoan != null ? Model.BookLoan.Status.ToString().ToLower() : "";
+                        if (Model?.BookLoan?.ReturnDate != null)
+                        {
+                            @Model.BookLoan.ReturnDate.Value.ToString("dd MMM yyyy")
+                        }
+                        else if (status.Contains("returnpending"))
+                        {
+                            <span class="text-info">Return Pending</span>
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    }
+                </td>
+            </tr>
+
+            <tr>
+                <td style="font-weight:600;color:#17497B;">Fine Paid:</td>
+                <td style="color:#1976d2;font-weight:700;">৳@Model.Amount</td>
+            </tr>
+            <tr>
+                <td style="font-weight:600;color:#17497B;">Fine Paid By (Email):</td>
+                <td>@user?.Email</td>
+            </tr>
+            <tr>
+                <td style="font-weight:600;color:#17497B;">Payment Date:</td>
+                <td>@Model.PaymentDate.ToString("dd MMM yyyy, h:mm tt")</td>
+            </tr>
+        </table>
+        <div style="margin-top:2px;font-size:1.04rem;color:#818aab;text-align:center;">
+            <i class="bi bi-shield-lock"></i> This document is auto-generated for your records.<br />
+            Please contact the library if you have any queries.
+        </div>
+    </div>
+</div>
+<div class="text-center mt-4">
+    <button type="button"
+            onclick="downloadInvoice()"
+            class="btn btn-outline-primary"
+            title="Download Invoice as PDF"
+            style="min-width:210px;">
+        <i class="bi bi-download"></i> Download Invoice
+    </button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+    function downloadInvoice() {
+        var bookElem = document.getElementById('book-name');
+        var bookName = bookElem ? bookElem.textContent.trim() : "invoice";
+        bookName = bookName.replace(/[^a-zA-Z0-9_\-\.]/g, '_');
+        var fileName = bookName + ".Invoice.pdf";
+
+        var element = document.getElementById('pdf-invoice');
+        var opt = {
+            margin: 0,
+            filename: fileName,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
+        };
+        html2pdf().from(element).set(opt).save();
+    }
+</script>

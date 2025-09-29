@@ -41,6 +41,15 @@ namespace LibraryManagementSystem.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("HasEverSubscribed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsBlockedFromBorrowing")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSubscribed")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -66,6 +75,9 @@ namespace LibraryManagementSystem.Migrations
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("SubscriptionEndDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
@@ -100,6 +112,9 @@ namespace LibraryManagementSystem.Migrations
 
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<double>("FineAmount")
+                        .HasColumnType("float");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
@@ -144,6 +159,52 @@ namespace LibraryManagementSystem.Migrations
                     b.ToTable("Category");
                 });
 
+            modelBuilder.Entity("LibraryManagementSystem.Models.Payment", b =>
+                {
+                    b.Property<int>("PaymentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentId"));
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("BookLoanId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PaymentType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TransactionId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("PaymentId");
+
+                    b.HasIndex("BookLoanId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Payment");
+                });
+
             modelBuilder.Entity("LibraryManagementSystem.Models.Product", b =>
                 {
                     b.Property<int>("ProductId")
@@ -158,6 +219,25 @@ namespace LibraryManagementSystem.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DonationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DonationStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DonorEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DonorName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDonated")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPremium")
+                        .HasColumnType("bit");
 
                     b.Property<string>("ProductAuthor")
                         .IsRequired()
@@ -335,6 +415,23 @@ namespace LibraryManagementSystem.Migrations
                         .IsRequired();
 
                     b.Navigation("Product");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("LibraryManagementSystem.Models.Payment", b =>
+                {
+                    b.HasOne("LibraryManagementSystem.Models.BookLoan", "BookLoan")
+                        .WithMany()
+                        .HasForeignKey("BookLoanId");
+
+                    b.HasOne("LibraryManagementSystem.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BookLoan");
 
                     b.Navigation("User");
                 });

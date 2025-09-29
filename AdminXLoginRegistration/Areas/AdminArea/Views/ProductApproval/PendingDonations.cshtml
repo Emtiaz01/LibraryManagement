@@ -1,0 +1,40 @@
+﻿@model IEnumerable<LibraryManagementSystem.Models.Product>
+@{
+     Layout = "~/Views/Shared/_AdminPage.cshtml";
+}
+<h2>Pending Book Donations</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Author</th>
+            <th>Donor</th>
+            <th>Status</th>
+            <th>Approve</th>
+            <th>Reject</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.ProductName</td>
+                <td>@item.ProductAuthor</td>
+                <td>@item.DonorName (@item.DonorEmail)</td>
+                <td>@item.DonationStatus</td>
+                <td>
+                    <form asp-action="ApproveDonation" method="post">
+                        <input type="hidden" name="id" value="@item.ProductId" />
+                        <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                    </form>
+                </td>
+                <td>
+                    <form asp-action="RejectDonation" method="post">
+                        <input type="hidden" name="id" value="@item.ProductId" />
+                        <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

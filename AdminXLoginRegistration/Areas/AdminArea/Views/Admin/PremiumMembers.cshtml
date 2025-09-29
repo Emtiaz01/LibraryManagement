@@ -1,0 +1,93 @@
+﻿@model IEnumerable<LibraryManagementSystem.Models.ApplicationUser>
+@{
+    Layout = "~/Views/Shared/_AdminPage.cshtml";
+}
+<h2 class="mb-4">Premium Members</h2>
+<table class="table table-bordered table-striped" id="premiumTable">
+    <thead>
+        <tr>
+            <th>User Name</th>
+            <th>Email</th>
+            <th>Subscription Ends</th>
+            <th>Status</th>
+            <th>Membership Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            var isActive = user.IsSubscribed && user.SubscriptionEndDate > DateTime.Now;
+            <tr data-user-id="@user.Id">
+                <td>@user.UserName</td>
+                <td>@user.Email</td>
+                <td class="sub-end-date">@user.SubscriptionEndDate?.ToString("dd MMM yyyy")</td>
+                <td>
+                    @if (isActive)
+                    {
+                        <span class="badge bg-success">Premium (Active)</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Inactive</span>
+                    }
+                </td>
+                <td>
+                    <form class="toggle-form" method="post" style="display:inline;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="userId" value="@user.Id" />
+                        <button type="button"
+                                class="btn btn-sm toggle-btn @(isActive ? "btn-danger" : "btn-success")"
+                                data-premium="@isActive">
+                            @(isActive ? "Cancel Membership" : "Re-issue Membership")
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@if (!Model.Any())
+{
+    <div class="alert alert-info mt-4">No premium members currently.</div>
+}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).on('click', '.toggle-btn', function () {
+        var btn = $(this);
+        var form = btn.closest('.toggle-form');
+        var userId = form.find('input[name="userId"]').val();
+        var row = btn.closest('tr');
+        var token = form.find('input[name="__RequestVerificationToken"]').val();
+        btn.prop('disabled', true);
+
+        $.ajax({
+            url: '@Url.Action("ToggleMembership", "Admin", new { area = "AdminArea" })',
+            type: 'POST',
+            data: { userId: userId, __RequestVerificationToken: token },
+            success: function (res) {
+                if (res.success) {
+                    // Update button and badge
+                    var badgeCell = row.find('td:eq(3)');
+                    if (res.isPremium) {
+                        btn.removeClass("btn-success").addClass("btn-danger").text("Cancel Membership");
+                        badgeCell.html('<span class="badge bg-success">Premium (Active)</span>');
+                    } else {
+                        btn.removeClass("btn-danger").addClass("btn-success").text("Re-issue Membership");
+                        badgeCell.html('<span class="badge bg-secondary">Inactive</span>');
+                    }
+                    btn.data('premium', res.isPremium);
+                    row.find('.sub-end-date').text(res.endDate);
+                } else {
+                    alert('Action failed.');
+                }
+            },
+            error: function () {
+                alert('Server error.');
+            },
+            complete: function() {
+                btn.prop('disabled', false);
+            }
+        });
+    });
+</script>

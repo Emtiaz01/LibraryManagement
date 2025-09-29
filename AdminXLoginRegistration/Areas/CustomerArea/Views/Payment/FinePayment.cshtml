@@ -1,0 +1,117 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdminPage.cshtml";
+}
+<style>
+    .payment-container {
+        max-width: 410px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 8px 38px -12px #1565c039;
+        padding: 35px 32px 28px 32px;
+        font-family: 'Segoe UI', Arial, sans-serif;
+    }
+
+    .payment-header {
+        text-align: center;
+        margin-bottom: 32px;
+    }
+
+    .payment-logo {
+        height: 44px;
+        object-fit: contain;
+        margin-bottom: 18px;
+    }
+
+    .payment-title {
+        font-size: 1.35rem;
+        font-weight: 600;
+        color: #003087;
+        letter-spacing: 0.02em;
+        margin-bottom: 2px;
+    }
+
+    .payment-amount {
+        color: #1565c0;
+        font-size: 1.14rem;
+        font-weight: 600;
+    }
+
+    .form-label {
+        font-size: .96rem;
+        font-weight: 500;
+        color: #17497B;
+        margin-bottom: 4px;
+    }
+
+    .form-control {
+        border-radius: 9px;
+        font-size: 1.08rem;
+        border: 1px solid #e5e5ef;
+        height: 38px;
+        padding-left: 13px;
+        background: #f9fbff;
+    }
+
+    .pay-btn {
+        margin-top: 18px;
+        font-size: 1.10rem;
+        width: 100%;
+        border-radius: 9px;
+        font-weight: 600;
+        letter-spacing: .01em;
+        padding: 11px 0;
+        box-shadow: 0 2px 14px -8px #1565c029;
+    }
+
+    .card-icons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 4px;
+        margin-bottom: 8px;
+    }
+
+        .card-icons img {
+            height: 27px;
+            margin-left: 2px;
+        }
+</style>
+
+<div class="payment-container">
+    <div class="payment-header">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg"
+             alt="Visa" class="payment-logo" />
+        <div class="payment-title">Library Fine Payment</div>
+        <div class="payment-amount">Amount Due: <span>৳@ViewBag.Amount</span></div>
+    </div>
+    <form asp-action="MockFinePayment" method="post" autocomplete="off">
+
+        <input type="hidden" name="amount" value="@ViewBag.Amount" />
+        <input type="hidden" name="bookLoanId" value="@ViewBag.BookLoanId" />
+
+        <div class="mb-3">
+            <label class="form-label">Email address</label>
+            <input type="email" name="email" value="@User.Identity.Name" class="form-control" required autocomplete="email" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Card Number</label>
+            <input type="text" name="cardnumber" class="form-control" maxlength="16" inputmode="numeric" placeholder="1234 5678 9012 3456" required />
+        </div>
+        <div class="row">
+            <div class="col-6 mb-3">
+                <label class="form-label">Expiry Date</label>
+                <input type="text" name="expiry" class="form-control" placeholder="MM/YY" maxlength="5" required autocomplete="cc-exp" />
+            </div>
+            <div class="col-6 mb-3">
+                <label class="form-label">CVC</label>
+                <input type="text" name="cvc" class="form-control" maxlength="3" required autocomplete="cc-csc" />
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary pay-btn">
+            Pay <span>৳@ViewBag.Amount</span>
+        </button>
+    </form>
+    <div class="text-center mt-3" style="font-size:.97rem; color:#757fa4;">
+        <i class="bi bi-shield-lock"></i> Your payment is secured & processed by Library System
+    </div>
+</div>

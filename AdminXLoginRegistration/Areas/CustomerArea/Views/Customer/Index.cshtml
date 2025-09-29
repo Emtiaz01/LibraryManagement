@@ -1,171 +1,261 @@
-﻿@model IEnumerable<LibraryManagementSystem.ViewModel.BookLoanViewModel>
+﻿@using Microsoft.AspNetCore.Identity
+@model IEnumerable<LibraryManagementSystem.ViewModel.BookLoanViewModel>
+@inject AdminXLoginRegistration.Data.ApplicationDbContext db
+@inject UserManager<LibraryManagementSystem.Models.ApplicationUser> UserManager
 
+@{
+    var currentUser = await UserManager.GetUserAsync(User);
+    bool isBlocked = currentUser != null && currentUser.IsBlockedFromBorrowing;
+}
 @{
     Layout = "~/Views/Shared/_AdminPage.cshtml";
 }
+@Html.AntiForgeryToken() <!-- Required for AJAX POST -->
 
-<div class="row pb-3">
-    @foreach (var product in Model)
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+<style>
+    .bs23-bookcard {
+        border-radius: 18px;
+        box-shadow: 0 6px 22px -6px #1565c023;
+        border: none;
+        background: #fff;
+        transition: .14s;
+    }
+
+        .bs23-bookcard:hover {
+            box-shadow: 0 8px 36px -8px #0a5ca933;
+            transform: translateY(-3px);
+        }
+
+    .bs23-bookimg {
+        height: 250px;
+        object-fit: cover;
+        border-radius: 12px;
+        box-shadow: 0 2px 18px -8px #002e6d33;
+        background: #eaf2fb;
+    }
+
+    .bs23-booktitle {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #002E6D;
+        margin-bottom: .25rem;
+    }
+
+    .bs23-author {
+        color: #1565c0;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+</style>
+
+<!-- FILTER BAR -->
+<div class="row mb-3">
+    <div class="col-md-2 mb-2">
+        <select id="filterOption" class="form-select">
+            <option value="all">All Books</option>
+            <option value="donated">Donated</option>
+            <option value="instock">In Stock</option>
+            <option value="stockout">Out of Stock</option>
+            <option value="premium">Premium Books</option>
+        </select>
+    </div>
+    <div class="col-md-3 mb-2">
+        <select id="categoryFilter" class="form-select">
+            <option value="">All Categories</option>
+            @foreach (var cat in db.Category.ToList())
+            {
+                <option value="@cat.CategoryId">@cat.CategoryName</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-3 mb-2">
+        <input type="text" id="authorFilter" class="form-control" placeholder="Filter by Author" />
+    </div>
+    <div class="col-md-3 mb-2">
+        <input type="text" id="searchText" class="form-control" placeholder="Search by Book Name" />
+    </div>
+    <div class="col-md-1 mb-2">
+        <button class="btn btn-primary w-100" id="bookFilterBtn">
+            <i class="bi bi-search"></i>
+        </button>
+    </div>
+</div>
+
+<!-- BOOK CARDS CONTAINER -->
+<div id="bookCards" class="row pb-3">
+    @foreach (var item in Model)
     {
         <div class="col-lg-3 col-sm-6 mb-4">
-            <div class="card border-0 p-3 shadow border-top border-5 rounded h-100">
-                <img src="@product.Product.ProductImage" class="card-img-top rounded" style="height: 250px;" />
-
-                <div class="card-body d-flex flex-column justify-content-between">
-                    <div class="text-center">
-                        <p class="card-title h5 text-dark opacity-75 text-uppercase">@product.Product.ProductName</p>
-                        <p class="card-title text-warning mb-2">by <b>@product.Product.ProductAuthor</b></p>
-                    </div>
-
-                    <div class="text-center">
-                        <hr />
-                        <p class="card-text h5 text-dark">
-                            @if (product.Product.ProductPrice == 0)
+            <div class="card bs23-bookcard h-100 p-2">
+                <div class="position-relative">
+                    <img src="@item.Product.ProductImage" class="card-img-top bs23-bookimg" alt="@item.Product.ProductName Cover" />
+                    @if (item.Product.ProductQuantity == 0)
+                    {
+                        <span class="position-absolute top-0 end-0 px-3 py-1 bg-danger text-white bs23-badge rounded-bottom-start">Out</span>
+                    }
+                </div>
+                <div class="card-body d-flex flex-column justify-content-between py-3">
+                    <div class="text-center mb-2">
+                        <div class="bs23-booktitle">
+                            @item.Product.ProductName
+                            @if (item.Product.IsPremium)
                             {
-                                <span class="text-success">Free</span>
+                                <span class="badge bg-warning text-dark ms-2">Premium</span>
                             }
-                            else
-                            {
-                                <span class="text-danger">৳@product.Product.ProductPrice</span>
-                            }
-                        </p>
+                        </div>
+                        <div class="bs23-author">by <span>@item.Product.ProductAuthor</span></div>
                     </div>
-
-                    <div class="mt-3">
-                        <a asp-area="CustomerArea" asp-controller="Customer"
-                           asp-action="Details"
-                           asp-route-id="@product.Product.ProductId"
-                           class="btn btn-primary bg-gradient border-0 form-control">
-                            Details
+                    <div class="mt-2">
+                        <a asp-area="CustomerArea" asp-controller="Customer" asp-action="Details"
+                           asp-route-id="@item.Product.ProductId"
+                           class="btn btn-outline-primary w-100 mb-1">
+                            <i class="bi bi-search me-1"></i> Details
                         </a>
                     </div>
-
-                    <div class="mt-2">
-                        @if (product.BookLoan == null)
+                    <div>
+                        @if (isBlocked)
                         {
-                            if (product.Product.ProductQuantity > 0)
+                            <div class="alert alert-danger text-center fw-semibold mb-2 py-2 w-100">
+                                <i class="bi bi-x-octagon me-1"></i>
+                                You are blocked from borrowing. Please pay your fines to reactivate your account.
+                            </div>
+                        }
+                        else if (item.Product.ProductQuantity == 0)
+                        {
+                            <button type="button" class="btn btn-secondary w-100 fw-semibold" disabled>
+                                <i class="bi bi-x-octagon me-1"></i> Out of Stock
+                            </button>
+                        }
+                        else if (item.BookLoan?.Status == LibraryManagementSystem.Models.LoanStatus.Pending)
+                        {
+                            <button type="button" class="btn btn-warning w-100 fw-semibold" disabled>
+                                <i class="bi bi-hourglass-split me-1"></i> Requested
+                            </button>
+                        }
+                        else if (item.BookLoan?.Status == LibraryManagementSystem.Models.LoanStatus.Approved)
+                        {
+                            <button type="button" class="btn btn-success w-100 fw-semibold" disabled>
+                                <i class="bi bi-check-circle me-1"></i> Borrowed
+                            </button>
+                        }
+                        else if (item.BookLoan?.Status == LibraryManagementSystem.Models.LoanStatus.ReturnPending)
+                        {
+                            <button type="button" class="btn btn-info text-white w-100 fw-semibold" disabled>
+                                <i class="bi bi-arrow-counterclockwise me-1"></i> Return Pending
+                            </button>
+                        }
+                        else
+                        {
+                            if (item.Product.IsPremium && !(ViewBag.HasPremium ?? false))
                             {
-                                <button type="button"
-                                        class="btn btn-primary w-100 py-2 text-uppercase fw-semibold"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#borrowModal"
-                                        data-product-id="@product.Product.ProductId"
-                                        data-user-id="@ViewBag.CurrentUserId">
-                                    Borrow Now
-                                </button>
+                                <a asp-area="CustomerArea" asp-controller="Customer" asp-action="SubscribeView"
+                                   class="btn btn-warning w-100 fw-semibold">
+                                    <i class="bi bi-star me-1"></i> Get Premium To Borrow
+                                </a>
                             }
                             else
                             {
-                                <div class="alert alert-warning text-center fw-semibold mt-2">
-                                    This book is currently unavailable.<br />
-                                    @if (product.NextAvailableDate != null)
-                                    {
-                                        <span>
-                                            Earliest expected return: <strong>@product.NextAvailableDate?.ToString("dd MMMM yyyy")</strong>
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span>No return information available.</span>
-                                    }
+                                <button type="button"
+                                        class="btn btn-primary w-100 fw-semibold borrow-book-btn"
+                                        data-product-id="@item.Product.ProductId"
+                                        data-user-id="@ViewBag.CurrentUserId">
+                                    <i class="bi bi-box-arrow-down me-1"></i> Borrow
+                                </button>
+                                <div class="mt-2 borrow-dates-panel" style="display:none;">
+                                    <input type="date" class="form-control borrow-date" />
+                                    <small>Borrow Date</small>
+                                    <button type="button"
+                                            class="btn btn-success w-100 mt-2 fw-semibold confirm-borrow-btn"
+                                            data-product-id="@item.Product.ProductId"
+                                            data-user-id="@ViewBag.CurrentUserId">
+                                        <i class="bi bi-check2"></i> Confirm Borrow
+                                    </button>
+                                    <button type="button"
+                                            class="btn btn-link w-100 mt-1 text-danger cancel-borrow-btn">
+                                        Cancel
+                                    </button>
                                 </div>
                             }
                         }
-                        else if (product.BookLoan.Status == LoanStatus.Pending)
-                        {
-
-                            <div class="alert alert-warning text-center fw-semibold mt-2">
-                                <span>Request Pending</span>
-                            </div>
-                        }
-                        else if (product.BookLoan.Status == LoanStatus.Approved && product.BookLoan.ReturnDate == null)
-                        {
-                            <form asp-area="CustomerArea" asp-controller="Customer" asp-action="ReturnBook" method="post">
-                                <input type="hidden" name="BookLoanId" value="@product.BookLoan.BookLoanId" />
-                                <button type="submit" class="btn btn-warning bg-gradient border-0 form-control">
-                                    Return
-                                </button>
-                            </form>
-                        }
-                        else if (product.BookLoan.Status == LoanStatus.Rejected)
-                        {
-                            <button type="button"
-                                    class="btn btn-primary w-100 py-2 text-uppercase fw-semibold"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#borrowModal"
-                                    data-product-id="@product.Product.ProductId"
-                                    data-user-id="@ViewBag.CurrentUserId">
-                                Borrow Now
-                            </button>
-                        }
-                        else if (product.BookLoan.Status == LoanStatus.ReturnPending)
-{
-    <div class="alert alert-info text-center fw-semibold mt-2">
-        <span>Return request is pending admin approval.</span>
-    </div>
-}
                     </div>
-
                 </div>
             </div>
         </div>
     }
 </div>
 
-<div class="modal fade" id="borrowModal" tabindex="-1" aria-labelledby="borrowModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form asp-area="CustomerArea" asp-action="BorrowBook" asp-controller="Customer" method="post">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="borrowModalLabel">Confirm Borrow</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-                <div class="modal-body">
-                    <input type="hidden" name="BookLoan.ProductId" id="ProductId" />
-                    <input type="hidden" name="BookLoan.UserId" id="UserId" />
-                    <div class="form-group mb-3">
-                        <label for="BorrowDate">Borrow Date</label>
-                        <input type="date" name="BookLoan.BorrowDate" class="form-control" required />
-                    </div>
+<script>
+    $('#bookFilterBtn').on('click', function () {
+        var filter = $('#filterOption').val();
+        var categoryId = $('#categoryFilter').val();
+        var author = $('#authorFilter').val();
+        var searchText = $('#searchText').val();
 
-                    <div class="form-group mb-3">
-                        <label for="DueDate">Due Date</label>
-                        <input type="date" name="BookLoan.DueDate" class="form-control" required />
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-success">Confirm</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-@section Scripts {
-    <script>
-        $(document).ready(function () {
-            var message = '@TempData["Success"]';
-            if (message) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: message,
-                    confirmButtonColor: '#3085d6',
-                    confirmButtonText: 'OK'
-                });
+        $.ajax({
+            url: '/CustomerArea/Customer/FilterBooks',
+            type: 'GET',
+            data: {
+                filter: filter,
+                categoryId: categoryId,
+                author: author,
+                searchText: searchText
+            },
+            success: function (partialHtml) {
+                $('#bookCards').html(partialHtml);
+            },
+            error: function () {
+                alert('Failed to filter books');
             }
-
-                    $('#borrowModal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget);
-            var productId = button.data('product-id');
-            var userId = button.data('user-id'); 
-
-            $('#ProductId').val(productId);
-            $('#UserId').val(userId);
         });
+    });
+        $(document).on('click', '.borrow-book-btn', function () {
+        var btn = $(this);
+        var card = btn.closest('.card');
+        // Hide any open panels in other cards
+        $('.borrow-dates-panel').hide();
+        card.find('.borrow-dates-panel').slideDown();
+    });
+
+    // Hide panel on cancel
+    $(document).on('click', '.cancel-borrow-btn', function () {
+        $(this).closest('.borrow-dates-panel').slideUp();
+    });
+
+    // Confirm Borrow handler
+    $(document).on('click', '.confirm-borrow-btn', function () {
+        var btn = $(this);
+        var card = btn.closest('.card');
+        var productId = btn.data('product-id');
+        var userId = btn.data('user-id');
+        var borrowDate = card.find('.borrow-date').val();
+
+        if (!borrowDate) {
+            alert('Please select a borrow date.');
+            return;
+        }
+
+        $.ajax({
+            url: '/CustomerArea/Customer/BorrowBookAjax',
+            type: 'POST',
+            data: {
+                productId: productId,
+                borrowDate: borrowDate,
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+            },
+            success: function (res) {
+                alert(res.message);
+                if (res.success) {
+                    location.reload();
+                }
+            },
+                error: function(xhr) {
+        console.log(xhr.responseText);
+        alert('Failed to request borrow. Status: ' + xhr.status);
+    }
         });
-    </script>
-}
+    });
+</script>
+

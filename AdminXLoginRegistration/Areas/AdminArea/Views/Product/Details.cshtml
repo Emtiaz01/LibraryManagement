@@ -1,0 +1,108 @@
+﻿@model LibraryManagementSystem.ViewModel.ProductViewModel
+
+@{
+    Layout = "~/Views/Shared/_AdminPage.cshtml";
+}
+
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-5">
+            <img src="@Model.Product.ProductImage" class="img-thumbnail" style="max-width:160px; margin-bottom: 1em;" alt="Book Cover" />
+            <h3>@Model.Product.ProductName</h3>
+            <p><strong>Author:</strong> @Model.Product.ProductAuthor</p>
+            <p><strong>ISBN:</strong> @Model.Product.ProductISBN</p>
+            <p><strong>Category:</strong> @Model.Product.Category?.CategoryName</p>
+            <p><strong>Description:</strong> @Model.Product.Description</p>
+            <p><strong>Quantity:</strong> @Model.Product.ProductQuantity</p>
+            <p><strong>Price:</strong> @Model.Product.ProductPrice</p>
+            <p><strong>Donated?</strong> @(Model.Product.IsDonated ? "Yes" : "No")</p>
+        </div>
+        <div class="col-md-7">
+            <h4>Loan Records</h4>
+            @if (Model.LoanRecords.Any())
+            {
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Borrower</th>
+                            <th>Borrow Date</th>
+                            <th>Due Date</th>
+                            <th>Return Date</th>
+                            <th>Status</th>
+                            <th>Fine</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var loan in Model.LoanRecords)
+                        {
+                            <tr>
+                                <td>@loan.User</td>
+                                <td>@loan.BorrowDate.ToString("dd-MM-yyyy")</td>
+                                <td>@loan.DueDate.ToString("dd-MM-yyyy")</td>
+                                <td>@loan.ReturnDate?.ToString("dd-MM-yyyy")</td>
+                                <td>
+                                    @{
+                                        // Fix: Convert LoanStatus enum to string for comparison
+                                        string statusText = loan.Status.ToString();
+                                        if (statusText == "Returned" || statusText == "1")
+                                        {
+                                            statusText = "Returned";
+                                        }
+                                        else if (statusText == "Approved" || statusText == "2")
+                                        {
+                                            statusText = "Approved";
+                                        }
+                                        if (statusText != "Returned" && statusText != "Approved")
+                                        {
+                                            statusText = "";
+                                        }
+                                    }
+                                    @statusText
+                                </td>
+                                <td>
+                                    @if (loan.FineAmount != null && loan.FineAmount > 0)
+                                    {
+                                        @String.Format("{0:0.00}", loan.FineAmount)
+                                    }
+                                    else
+                                    {
+                                        @("0.00")
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            }
+            else
+            {
+                <p>No loan records.</p>
+            }
+
+            @if (Model.Product.IsDonated)
+            {
+                <h4>Donation Info</h4>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Donor Name</th>
+                            <th>Donor Email</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>@Model.Product.DonationStatus</td>
+                            <td>@Model.Product.DonorName</td>
+                            <td>@Model.Product.DonorEmail</td>
+                            <td>@Model.Product.DonationDate.ToString("yyyy-MM-dd HH:mm")</td>
+                        </tr>
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+    <a href="@Url.Action("Index")" class="btn btn-secondary mt-3">Back to Product List</a>
+</div>

@@ -1,0 +1,193 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdminPage.cshtml";
+}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+<style>
+    .premium-outer {
+        min-height: 91vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(130deg,#fffde7 50%, #ffecb3 100%);
+        padding: 2.5rem 0 2.5rem 0;
+    }
+
+    .premium-card-pro {
+        border-radius: 32px;
+        background: linear-gradient(120deg, #fffbea 70%, #ffecb3 110%);
+        box-shadow: 0 12px 38px -10px #ce9400a6, 0 2px 16px -2px #fffde7cc;
+        padding: 3.9rem 3.5rem 2.5rem 3.5rem;
+        max-width: 470px;
+        border: 3.5px solid #ffd740;
+        text-align: center;
+        position: relative;
+    }
+
+        .premium-card-pro:before {
+            content: "";
+            position: absolute;
+            inset: -3px;
+            z-index: -1;
+            border-radius: 35px;
+            background: linear-gradient(90deg,rgba(255,193,7,.22),rgba(255,235,59,0.11));
+        }
+
+    .premium-flare {
+        font-size: 2.85rem;
+        color: #ffc107;
+        text-shadow: 0 2px 18px #ffecb36e;
+        letter-spacing: 2px;
+        font-weight: 900;
+    }
+
+    .premium-title {
+        font-size: 2.32rem;
+        color: #744a04;
+        font-weight: 900;
+        letter-spacing: 1px;
+        margin-bottom: 13px;
+    }
+
+    .premium-price-row {
+        display: flex;
+        align-items: stretch;
+        justify-content: space-around;
+        gap: 1.3rem;
+        margin: 2rem 0 1.2rem 0;
+    }
+
+    .plan-pro {
+        flex: 1 1 120px;
+        background: #fffbe0;
+        border-radius: 14px;
+        padding: 1.1rem .6rem;
+        border: 2px solid #ffd74097;
+        box-shadow: 0 2px 19px -6px #ffecb399;
+        transition: box-shadow .17s, border-color .16s, background .17s;
+        position: relative;
+    }
+
+        .plan-pro.selected, .plan-pro:hover {
+            border: 3px solid #ffb300;
+            background: #fff8e1;
+            box-shadow: 0 6px 28px -5px #fdc90080;
+        }
+
+    .plan-radio {
+        accent-color: #fdaf00;
+        margin-bottom: 3px;
+    }
+
+    .plan-length {
+        font-size: 1.13rem;
+        font-weight: 700;
+        color: #a86a00;
+        letter-spacing: .03em;
+        margin-bottom: 5px;
+    }
+
+    .plan-taka {
+        display: block;
+        font-size: 1.9rem;
+        color: #d68f00;
+        font-weight: 900;
+    }
+
+    .plan-save {
+        font-size: .91rem;
+        color: #4faf5e;
+        font-weight: 600;
+    }
+
+    .premium-features {
+        list-style: none;
+        padding: 0 0 0 0;
+        margin: 1.6rem 0 2.4rem 0;
+        text-align: left;
+        display: inline-block;
+        font-size: 1.11rem;
+        color: #654;
+    }
+
+        .premium-features li {
+            margin-bottom: 11px;
+            font-weight: 600;
+        }
+
+        .premium-features i {
+            color: #d7ac13;
+            margin-right: 10px;
+            font-size: 1.28rem;
+            position: relative;
+            top: 2px;
+        }
+
+    .subscribe-btn {
+        padding: .95rem 2.25rem;
+        border-radius: 16px;
+        background: linear-gradient(90deg, #ffe082, #fbc02d 90%);
+        border: none;
+        font-size: 1.23rem;
+        font-weight: 800;
+        color: #796000;
+        letter-spacing: .06em;
+        box-shadow: 0 3px 32px -10px #ffd6007a;
+        transition: background .19s, color .19s;
+    }
+
+        .subscribe-btn:hover {
+            background: linear-gradient(90deg, #ffd740,#ff9800 100%);
+            color: #fffde7;
+            box-shadow: 0 5px 40px -12px #ffecb3cc;
+        }
+</style>
+
+
+<div class="premium-outer">
+    <div class="premium-card-pro">
+        <div class="premium-flare">
+            <i class="bi bi-star-fill"></i>
+            <i class="bi bi-gem"></i>
+            <i class="bi bi-star-fill"></i>
+        </div>
+        <div class="premium-title mb-4">Become a Premium Member</div>
+        <form method="post" asp-area="CustomerArea" asp-controller="Customer" asp-action="PayPremium">
+            @Html.AntiForgeryToken()
+            <div class="premium-price-row justify-content-center">
+                <label class="plan-pro">
+                    <input type="radio" class="plan-radio" name="Plan" value="monthly" id="plan1" checked />
+                    <div class="plan-length">1 Month</div>
+                    <span class="plan-taka">৳100</span>
+                </label>
+                <label class="plan-pro">
+                    <input type="radio" class="plan-radio" name="Plan" value="twomonth" id="plan2" />
+                    <div class="plan-length">2 Months</div>
+                    <span class="plan-taka">৳150</span>
+                    <div class="plan-save"><i class="bi bi-patch-check"></i>Save ৳50</div>
+                </label>
+                <label class="plan-pro">
+                    <input type="radio" class="plan-radio" name="Plan" value="yearly" id="plan3" />
+                    <div class="plan-length">1 Year</div>
+                    <span class="plan-taka">৳700</span>
+                    <div class="plan-save"><i class="bi bi-award"></i>Best Value</div>
+                </label>
+            </div>
+            <ul class="premium-features">
+                <li><i class="bi bi-book-half"></i> Full Access to Premium Books</li>
+                <li><i class="bi bi-cash-coin"></i> Half the Fine on Late Returns</li>
+                <li><i class="bi bi-gift"></i> Eligible To Donate Books</li>
+                <li><i class="bi bi-person-heart"></i> VIP Badge &amp; Library Events</li>
+                <li><i class="bi bi-shield-check"></i> Priority Support</li>
+            </ul>
+            <button type="submit" class="subscribe-btn"><i class="bi bi-arrow-right-circle"></i> Pay And Subscribe</button>
+        </form>
+    </div>
+</div>
+<script>
+    document.querySelectorAll('.plan-radio').forEach(radio => {
+        radio.addEventListener('change', function() {
+            document.querySelectorAll('.plan-pro').forEach(el => el.classList.remove('selected'));
+            this.parentElement.classList.add('selected');
+        });
+    });
+</script>

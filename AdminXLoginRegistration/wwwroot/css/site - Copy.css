@@ -1,0 +1,269 @@
+.library-hero-bg {
+    width: 100vw;
+    height: 100vh;
+    min-height: 100svh;
+    overflow: hidden;
+    background: radial-gradient(circle at 60% 30%, #256cc5 0%, #142743 85%);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.display-hero-message {
+    z-index: 5;
+    position: relative;
+    top: 12vh;
+    width: 100vw;
+    text-align: center;
+}
+
+.text-shadow-lg {
+    text-shadow: 2px 6px 18px rgba(40,56,90,.25), 0 2px 7px rgba(0,10,40,.10);
+}
+
+.text-shadow {
+    text-shadow: 0 2px 12px rgba(30,40,80,.08);
+}
+
+.hero-cartoons {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 5vh;
+    bottom: 0;
+    width: 100vw;
+    z-index: 2;
+}
+
+.hero-book {
+    position: absolute;
+    bottom: 12vw;
+    width: 56px;
+    height: 82px;
+    border-radius: 7px 17px 22px 7px;
+    box-shadow: 0 7px 18px rgba(80,80,100,.09), 0 1px 7px rgba(0,0,0,.04);
+    opacity: 0.8;
+    background: #2364aa;
+    will-change: transform;
+}
+
+.hero-book1 {
+    left: 8vw;
+    background: linear-gradient(125deg,#43aa8b 52%,#2a9d8f 100%);
+}
+
+.hero-book2 {
+    left: 18vw;
+    background: linear-gradient(115deg,#f95d6a 70%,#ef7c8e 120%);
+}
+
+.hero-book3 {
+    left: 30vw;
+    background: linear-gradient(120deg,#142743 60%,#3670a0 120%);
+}
+
+.hero-book4 {
+    left: 45vw;
+    background: linear-gradient(93deg,#fbbc05 40%,#ffd971 100%);
+}
+
+.hero-book5 {
+    left: 60vw;
+    background: linear-gradient(125deg,#7f53ac 30%,#647dee 100%);
+}
+
+.hero-book6 {
+    left: 76vw;
+    background: linear-gradient(110deg,#f67280 60%,#f8b195 100%);
+}
+
+.hero-book7 {
+    left: 91vw;
+    background: linear-gradient(157deg,#00b4db 30%,#0083b0 100%);
+}
+
+.hero-book {
+    animation: hero-book-float 4.2s infinite alternate cubic-bezier(.6,1.7,.33,.65);
+}
+
+.hero-book1 {
+    animation-delay: 0.2s;
+}
+
+.hero-book2 {
+    animation-delay: 0.7s;
+}
+
+.hero-book3 {
+    animation-delay: 1.3s;
+}
+
+.hero-book4 {
+    animation-delay: 2.4s;
+}
+
+.hero-book5 {
+    animation-delay: 2.9s;
+}
+
+.hero-book6 {
+    animation-delay: 3.6s;
+}
+
+.hero-book7 {
+    animation-delay: 1.85s;
+}
+
+@keyframes hero-book-float {
+    0% {
+        transform: translateY(0) rotate(-3deg);
+    }
+
+    100% {
+        transform: translateY(-60px) rotate(5deg);
+    }
+}
+
+/* Waving book cartoon on a moving shelf */
+.hero-cart-handbook {
+    position: absolute;
+    left: 81vw;
+    bottom: 16vw;
+    width: 62px;
+    height: 80px;
+    background: linear-gradient(98deg,#f95d6a 60%,#f8b195 110%);
+    border-radius: 7px 17px 22px 7px;
+    box-shadow: 0 11px 24px rgba(90,60,60,.18), 0 3px 15px rgba(0,0,0,.06);
+    z-index: 3;
+    animation: cart-roll 10s infinite linear;
+}
+
+@keyframes cart-roll {
+    0% {
+        left: -10vw;
+        bottom: 10vw;
+    }
+
+    12% {
+        left: 7vw;
+        bottom: 15vw;
+    }
+
+    23% {
+        left: 18vw;
+        bottom: 12vw;
+    }
+
+    32% {
+        left: 30vw;
+        bottom: 18vw;
+    }
+
+    50% {
+        left: 50vw;
+        bottom: 15vw;
+    }
+
+    64% {
+        left: 66vw;
+        bottom: 19vw;
+    }
+
+    74% {
+        left: 81vw;
+        bottom: 16vw;
+    }
+
+    100% {
+        left: 115vw;
+        bottom: 12vw;
+    }
+}
+
+.hero-cart-handbook .book-hand {
+    position: absolute;
+    right: -13px;
+    bottom: 27px;
+    width: 20px;
+    height: 28px;
+    border-radius: 70% 80% 0 0;
+    background: linear-gradient(120deg, #f95d6a,#fff0 90%);
+    border-right: 2px solid #f95d6a;
+    animation: cart-hwave 1.2s .8s infinite;
+    transform-origin: 0% 100%;
+}
+
+@keyframes cart-hwave {
+    0%,100% {
+        transform: rotate(-6deg);
+    }
+
+    33% {
+        transform: rotate(-26deg);
+    }
+
+    60% {
+        transform: rotate(7deg);
+    }
+}
+
+.hand-face {
+    position: absolute;
+    left: 12px;
+    top: 19px;
+    width: 30px;
+    height: 30px;
+}
+
+    .hand-face .eye {
+        width: 7px;
+        height: 7px;
+        background: #fff;
+        border-radius: 50%;
+        box-shadow: 2px 2px #2223;
+        position: absolute;
+        left: 9px;
+        top: 3px;
+    }
+
+    .hand-face .smile {
+        width: 16px;
+        height: 5px;
+        border-radius: 0 0 12px 12px;
+        border-bottom: 2px solid #fff;
+        position: absolute;
+        left: 10px;
+        top: 18px;
+    }
+
+.animate-float2 {
+    animation: float2 2.3s ease-in-out infinite alternate;
+}
+
+@keyframes float2 {
+    0% {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: translateY(-13px);
+    }
+}
+
+/* Responsive design for animated landscape */
+@media (max-width:575px) {
+    .library-hero-bg {
+        padding-top: 3.5vw;
+    }
+
+    .hero-cartoons .hero-book {
+        width: 32px;
+        height: 44px;
+    }
+
+    .display-hero-message {
+        top: 5vh;
+    }
+}

@@ -1,0 +1,62 @@
+﻿@model IEnumerable<LibraryManagementSystem.Models.Product>
+@{
+    Layout = "~/Views/Shared/_AdminPage.cshtml";
+}
+<h2>All Donated Books</h2>
+<p>Total Donated Books: <b>@Model.Count()</b></p>
+<table class="table table-bordered table-striped mt-3">
+    <thead>
+        <tr>
+            <th>Book Name</th>
+            <th>Author</th>
+            <th>Donor</th>
+            <th>Donor Email</th>
+            <th>Quantity</th>
+            <th>Category</th>
+            <th>Image</th>
+            <th>Donation Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var book in Model)
+        {
+            <tr>
+                <td>@book.ProductName</td>
+                <td>@book.ProductAuthor</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(book.DonorName))
+                    {
+                        @book.DonorName
+                    }
+                    else
+                    {
+                        <span class="text-muted">Anonymous</span>
+                    }
+                </td>
+                <td>
+                    @if (!string.IsNullOrEmpty(book.DonorEmail))
+                    {
+                        @book.DonorEmail
+                    }
+                    else
+                    {
+                        <span class="text-muted">-</span>
+                    }
+                </td>
+                <td>@book.ProductQuantity</td>
+                <td>@(book.Category != null ? book.Category.CategoryName : "-")</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(book.ProductImage))
+                    {
+                        <img src="@book.ProductImage" alt="Book Cover" style="height: 40px;" />
+                    }
+                    else
+                    {
+                        <span class="text-muted">No cover</span>
+                    }
+                </td>
+                <td>@book.DonationStatus</td>
+            </tr>
+        }
+    </tbody>
+</table>

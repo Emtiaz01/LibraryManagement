@@ -1,39 +1,190 @@
 ﻿@model LibraryManagementSystem.ViewModel.AdminNotificationViewModel
 
-<li class="nav-item dropdown">
-    <a class="nav-link" data-bs-toggle="dropdown" href="#">
-        <i class="bi bi-bell-fill"></i>
-        <span class="navbar-badge badge text-bg-warning">@Model.PendingCount</span>
-    </a>
-    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
-        <span class="dropdown-item dropdown-header">@Model.PendingCount Pending Requests</span>
-        <div class="dropdown-divider"></div>
+<style>
+    .bs23-bell-navbar {
+        position: relative;
+        font-size: 1.5rem;
+        margin-top: 2px;
+    }
 
-        @foreach (var request in Model.PendingRequests)
+    .bs23-navbar-badge {
+        position: absolute;
+        top: -7px;
+        right: -9px;
+        font-size: .98rem;
+        min-width: 25px;
+        background: #ffc107;
+        color: #212529;
+        border-radius: 12px;
+        font-weight: 700;
+        border: 1.5px solid #fff;
+        padding: 2px 7px;
+        text-align: center;
+    }
+
+    .bs23-dropdown-menu-lg {
+        min-width: 382px;
+        border-radius: 14px;
+        box-shadow: 0 8px 32px -8px #002e6d2c;
+        background: #fff;
+        padding: 0;
+    }
+
+    .bs23-dropdown-header {
+        font-size: 1.13rem;
+        font-weight: 700;
+        color: #1565c0;
+        padding: 13px 24px 9px 24px;
+    }
+
+    .bs23-request-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 5px;
+        padding: 11px 24px 11px 24px;
+    }
+
+    .bs23-request-info {
+        flex: 1;
+        font-size: .97rem;
+    }
+
+    .bs23-request-title {
+        font-weight: 700;
+        color: #002e6d;
+    }
+
+    .bs23-request-form {
+        display: inline-block;
+    }
+
+    .bs23-btn-action {
+        font-size: 1rem;
+        padding: 3px 11px;
+        border-radius: 7px;
+        margin-left: 2px;
+    }
+
+        .bs23-btn-action:focus {
+            outline: none;
+        }
+
+    .bs23-btn-approve {
+        background: #16ce51;
+        color: #fff;
+        border: none;
+    }
+
+    .bs23-btn-reject {
+        background: #e91f2b;
+        color: #fff;
+        border: none;
+    }
+
+    .bs23-footer-link {
+        font-weight: 700;
+        color: #1565c0;
+        text-align: center;
+        padding: 12px;
+        display: block;
+    }
+
+    .bs23-divider {
+        margin: 0 24px;
+        height: 1px;
+        background: #eaf2fb;
+    }
+</style>
+
+<li class="nav-item dropdown">
+    <a class="nav-link bs23-bell-navbar" data-bs-toggle="dropdown" href="#">
+        <i class="bi bi-bell-fill"></i>
+        <span class="bs23-navbar-badge">@Model.PendingCount</span>
+    </a>
+    <div class="dropdown-menu bs23-dropdown-menu-lg dropdown-menu-end">
+        <div class="bs23-dropdown-header">
+            <i class="bi bi-hourglass-split"></i> @Model.PendingCount Pending Requests
+        </div>
+        <div class="bs23-divider"></div>
+
+        @* Pending Borrow Requests *@
+        @if (Model.PendingRequests.Any())
         {
-            <div class="dropdown-item">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <strong>@request.Product.ProductName</strong> - by <em>@request.User.UserName</em><br />
-                        <small class="text-secondary">@request.BorrowDate.ToShortDateString()</small>
+            <div style="font-size:1.08rem;padding:6px 24px 2px 24px;font-weight:500;color:#1565c0">
+                Book Borrow Requests
+            </div>
+            @foreach (var request in Model.PendingRequests)
+            {
+                <div class="bs23-request-row">
+                    <div class="bs23-request-info">
+                        <span class="bs23-request-title">@request.Product.ProductName</span>
+                        <span class="text-secondary"> – by </span>
+                        <span style="color:#1565c0;font-weight:600;">@request.User.UserName</span> <br />
+                        <span class="text-secondary" style="font-size:.92rem;">@request.BorrowDate.ToShortDateString()</span>
                     </div>
-                    <div class="ms-2">
-                        <form asp-area="AdminArea" asp-controller="Admin" asp-action="ApproveRequest" method="post" class="d-inline">
+                    <div>
+                        <form asp-area="AdminArea" asp-controller="Admin" asp-action="ApproveRequest" method="post" class="bs23-request-form" title="Approve">
                             <input type="hidden" name="id" value="@request.BookLoanId" />
-                            <button type="submit" class="btn btn-sm btn-success">✓</button>
+                            <button type="submit" class="bs23-btn-action bs23-btn-approve" aria-label="Approve"><i class="bi bi-check2"></i></button>
                         </form>
-                        <form asp-area="AdminArea" asp-controller="Admin" asp-action="RejectRequest" method="post" class="d-inline">
+                        <form asp-area="AdminArea" asp-controller="Admin" asp-action="RejectRequest" method="post" class="bs23-request-form" title="Reject">
                             <input type="hidden" name="id" value="@request.BookLoanId" />
-                            <button type="submit" class="btn btn-sm btn-danger">✕</button>
+                            <button type="submit" class="bs23-btn-action bs23-btn-reject" aria-label="Reject"><i class="bi bi-x-lg"></i></button>
                         </form>
                     </div>
                 </div>
-            </div>
-            <div class="dropdown-divider"></div>
+                <div class="bs23-divider"></div>
+            }
         }
 
-        <a href="@Url.Action("AllPendingRequests", "Admin", new { area = "AdminArea" })" class="dropdown-item dropdown-footer">
-            See All Requests
+        @* Pending Donation Requests *@
+        @if (Model.PendingDonations != null && Model.PendingDonations.Any())
+        {
+            <div style="font-size:1.08rem;padding:6px 24px 2px 24px;font-weight:500;color:#1565c0">
+                Book Donation Requests
+            </div>
+            @foreach (var donation in Model.PendingDonations)
+            {
+                <div class="bs23-request-row">
+                    <div class="bs23-request-info">
+                        <span class="bs23-request-title">@donation.ProductName</span>
+                        <span class="text-secondary"> – Donor: </span>
+                        <span style="color:#1565c0;font-weight:600;">
+                            @(string.IsNullOrEmpty(donation.DonorName) ? "Anonymous" : donation.DonorName)
+                        </span>
+                        <br />
+                        <span class="text-secondary" style="font-size:.92rem;">
+                            Requested on @donation.DonationDate.ToShortDateString()
+                        </span>
+                    </div>
+                    <div>
+                        <form asp-area="AdminArea" asp-controller="ProductApproval" asp-action="ApproveDonation" method="post" class="bs23-request-form" title="Approve">
+                            <input type="hidden" name="id" value="@donation.ProductId" />
+                            <button type="submit" class="bs23-btn-action bs23-btn-approve" aria-label="Approve"><i class="bi bi-check2"></i></button>
+                        </form>
+                        <form asp-area="AdminArea" asp-controller="ProductApproval" asp-action="RejectDonation" method="post" class="bs23-request-form" title="Reject">
+                            <input type="hidden" name="id" value="@donation.ProductId" />
+                            <button type="submit" class="bs23-btn-action bs23-btn-reject" aria-label="Reject"><i class="bi bi-x-lg"></i></button>
+                        </form>
+                    </div>
+                </div>
+                <div class="bs23-divider"></div>
+            }
+        }
+
+        @* No pending requests *@
+        @if (!Model.PendingRequests.Any() && (Model.PendingDonations == null || !Model.PendingDonations.Any()))
+        {
+            <div class="bs23-request-row" style="color:#aaa;">
+                <span>No pending requests.</span>
+            </div>
+            <div class="bs23-divider"></div>
+        }
+
+        <a href="@Url.Action("AllPendingRequests", "Admin", new { area = "AdminArea" })"
+           class="bs23-footer-link">
+            See All Requests <i class="bi bi-chevron-double-right"></i>
         </a>
     </div>
 </li>

@@ -1,118 +1,110 @@
-﻿<aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+﻿<aside class="app-sidebar bg-white shadow" data-bs-theme="light" style="border-right: 2px solid #002e6d;">
     <!--begin::Sidebar Brand-->
-    <div class="sidebar-brand">
-        <!--begin::Brand Link-->
-        <a href="../index.html" class="brand-link">
-            <!--begin::Brand Image-->
-            <img src="../../../dist/assets/img/AdminLTELogo.png"
-                 alt="AdminLTE Logo"
-                 class="brand-image opacity-75 shadow" />
-            <!--end::Brand Image-->
-            <!--begin::Brand Text-->
-            <span class="brand-text fw-light">GEN-Z Library</span>
-            <!--end::Brand Text-->
+    <div class="sidebar-brand d-flex align-items-center p-2 mb-3" style="background:#002e6d;">
+        <a href="~/"
+           class="brand-link d-flex align-items-center text-decoration-none">
+            <img src="/Images/products/bs23-logo-icon.png"
+                 alt="Brain Station 23 Logo"
+                 style="height:32px;width:auto;margin-right:8px;" />
         </a>
-        <!--end::Brand Link-->
     </div>
     <!--end::Sidebar Brand-->
-    <!--begin::Sidebar Wrapper-->
-    <div class="sidebar-wrapper">
+    <div class="sidebar-wrapper px-2">
         <nav class="mt-2">
             <!--begin::Sidebar Menu-->
-            @if(User.IsInRole("Admin"))
+            @if (User.IsInRole("Admin"))
             {
-                <ul class="nav sidebar-menu flex-column"
-                    data-lte-toggle="treeview"
-                    role="menu"
-                    data-accordion="false">
-                    <li class="nav-item menu-open">
-                        <a class="nav-link active">
-                            <i class="nav-icon bi bi-speedometer"></i>
-                            <p>
-                                Admin Panel
-                                <i class="nav-arrow bi bi-chevron-right"></i>
-                            </p>
+                <ul class="nav flex-column mb-3">
+                    <li class="nav-item">
+                        <a asp-area="AdminArea" asp-controller="Admin" asp-action="Dashboard" class="nav-link text-primary fw-bold">
+                            <i class="bi bi-speedometer2"></i>
+                            Dashboard
                         </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a asp-area="AdminArea" asp-controller="Admin" asp-action="Dashboard" class="nav-link">
-                                    <i class="nav-icon bi bi-circle"></i>
-                                    <p>Dashboard</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a asp-area="AdminArea" asp-controller="Admin" asp-action="Index" class="nav-link">
-                                    <i class="nav-icon bi bi-circle"></i>
-                                    <p>User List</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a asp-area="AdminArea" asp-controller="Category" asp-action="Index" class="nav-link">
-                                    <i class="nav-icon bi bi-circle"></i>
-                                    <p>Category</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a asp-area="AdminArea" asp-controller="Product" asp-action="Index" class="nav-link">
-                                    <i class="nav-icon bi bi-circle"></i>
-                                    <p>Product</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a asp-area="AdminArea" asp-controller="Admin" asp-action="ReturnRequest" class="nav-link">
-                                    <i class="nav-icon bi bi-circle"></i>
-                                    <p>Return Request</p>
-                                </a>
-                            </li>
-                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-area="AdminArea" asp-controller="Admin" asp-action="Index" class="nav-link">
+                            <i class="bi bi-people"></i>
+                            User List
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-area="AdminArea" asp-controller="Category" asp-action="Index" class="nav-link">
+                            <i class="bi bi-tags"></i>
+                            Category
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-area="AdminArea" asp-controller="Product" asp-action="Index" class="nav-link">
+
+                            <i class="bi bi-journals"></i>
+                            Product
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-area="AdminArea" asp-controller="Admin" asp-action="ReturnRequest" class="nav-link">
+                            <i class="bi bi-arrow-bar-up"></i>
+                            Return Request
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-area="AdminArea" asp-controller="ProductApproval" asp-action="PendingDonations" class="nav-link">
+                            <i class="bi bi-clipboard-check"></i>
+                            Approve Book Donations
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="@Url.Action("DonatedBooks", "ProductApproval", new { area = "AdminArea" })" class="nav-link">
+                            <i class="bi bi-gift"></i>
+                            Donated Books
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-area="AdminArea" asp-controller="Admin" asp-action="PremiumMembers" class="nav-link">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            Premium Members
+                        </a>
+
+                </ul>
+            }
+            @if (User.IsInRole("Customer"))
+            {
+                @if (ViewBag.HasPremium ?? false)
+                {
+                    <span class="badge bg-warning text-dark ms-1" style="font-size:1rem;">
+                        <i class="bi bi-gem"></i> Premium Member
+                    </span>
+                }
+            
+                <ul class="nav flex-column mb-3">
+                    <li class="nav-item">
+                        <a asp-area="CustomerArea" asp-controller="Customer" asp-action="Index" class="nav-link text-primary fw-bold">
+                            <i class="bi bi-grid"></i>
+                            View Product
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-area="CustomerArea" asp-controller="Customer" asp-action="MyBorrowedBooks" class="nav-link">
+                            <i class="bi bi-journal-arrow-up"></i> My Borrowed Books
+                        </a>
+
+                    </li>
+                    <li class="nav-item">
+                        <a asp-area="CustomerArea" asp-controller="Customer" asp-action="DonateBook" class="nav-link">
+                            <i class="bi bi-book"></i>
+                            Donate Book
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="@Url.Action("MyPayments", "Payment", new { area = "CustomerArea" })" class="nav-link">
+                            <i class="bi bi-credit-card"></i>
+                            My Payments
+                        </a>
                     </li>
                 </ul>
             }
-            @if(User.IsInRole("Customer"))
-            {
-                <ul class="nav sidebar-menu flex-column"
-                    data-lte-toggle="treeview"
-                    role="menu"
-                    data-accordion="false">
-                    <li class="nav-item menu-open">
-                        <a class="nav-link active">
-                            <i class="nav-icon bi bi-speedometer"></i>
-                            <p>
-                                Customer
-                                <i class="nav-arrow bi bi-chevron-right"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a asp-area="CustomerArea" asp-controller="Customer" asp-action="Index" class="nav-link">
-                                    <i class="nav-icon bi bi-circle"></i>
-                                    <p>View Product</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a asp-controller="Admin" asp-action="Index" class="nav-link">
-                                    <i class="nav-icon bi bi-circle"></i>
-                                    <p>Borrow Book</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a asp-controller="Category" asp-action="Index" class="nav-link">
-                                    <i class="nav-icon bi bi-circle"></i>
-                                    <p>Happy</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="./index3.html" class="nav-link">
-                                    <i class="nav-icon bi bi-circle"></i>
-                                    <p>Hello</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            }
-            <!--end::Sidebar Menu-->
         </nav>
     </div>
-    <!--end::Sidebar Wrapper-->
+    <div class="text-center py-3" style="font-size:0.95rem;color:#6c757d;">
+        &copy; @DateTime.Now.Year Brain Station 23 PLC
+    </div>
 </aside>

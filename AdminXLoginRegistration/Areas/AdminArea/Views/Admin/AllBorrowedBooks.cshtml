@@ -1,0 +1,257 @@
+﻿@model IEnumerable<LibraryManagementSystem.ViewModel.BookLoanWithFineViewModel>
+@{
+    Layout = "~/Views/Shared/_AdminPage.cshtml";
+    ViewBag.Title = "All Borrowed Books";
+    var filter = ViewBag.CurrentFilter as string ?? "all";
+    var emails = (List<string>)ViewBag.UserEmails;
+    var selectedEmail = ViewBag.SelectedEmail as string ?? "";
+}
+<h2 class="main-title">All Borrowed Books & Fines</h2>
+
+<div class="filter-card">
+    <form method="get" asp-action="AllBorrowedBooks" class="filter-form">
+        <div class="form-group">
+            <label for="filter" class="form-label">Filter by Status</label>
+            <select name="filter" id="filter" class="form-select">
+                <option value="all" selected="@(filter == "all" ? "selected" : null)">All</option>
+                <option value="returned" selected="@(filter == "returned" ? "selected" : null)">Returned</option>
+                <option value="notreturned" selected="@(filter == "notreturned" ? "selected" : null)">Not Returned</option>
+                <option value="withfine" selected="@(filter == "withfine" ? "selected" : null)">With Fine</option>
+                <option value="withoutfine" selected="@(filter == "withoutfine" ? "selected" : null)">Without Fine</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="userEmail" class="form-label">User Email</label>
+            <select name="userEmail" id="userEmail" class="form-select">
+                <option value="">All Users</option>
+                @foreach (var email in emails.Where(e => !string.Equals(e, "admin@gmail.com", StringComparison.OrdinalIgnoreCase)))
+                {
+                    <option value="@email" selected="@(selectedEmail == email ? "selected" : null)">@email</option>
+                }
+            </select>
+        </div>
+        <div class="form-group form-action">
+            <button type="submit" class="btn-apply">Apply</button>
+        </div>
+    </form>
+</div>
+
+<div class="table-container">
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>Book</th>
+                <th>Author</th>
+                <th>Borrower Email</th>
+                <th>Borrow Date</th>
+                <th>Due Date</th>
+                <th>Return Date</th>
+                <th>Fine Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="8" class="empty-row">No borrowed books found for the selected criteria.</td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <img src="@item.BookImageUrl" alt="Book Cover" class="book-thumb" />
+                            <span class="book-title">@item.BookName</span>
+                        </td>
+                        <td>@item.BookAuthor</td>
+                        <td>@item.Email
+                            @if (item.IsPremiumMember == true)
+                            {
+                                <span class="premium-badge" title="Premium Member">★</span>
+                            }
+                    </td>
+                        <td>@item.BorrowDate.ToString("dd MMM yyyy")</td>
+                        <td>@item.DueDate.ToString("dd MMM yyyy")</td>
+                    <td>
+                        @(item.ReturnDate.HasValue
+                                            ? item.ReturnDate.Value.ToString("dd MMM yyyy")
+                                            : "Not Returned")
+                </td>
+                        <td>
+                            @if (item.FineAmount > 0)
+                            {
+                                <span class="status-badge high-fine">৳@item.FineAmount.ToString("0.##")</span>
+                            }
+                            else
+                            {
+                                <span class="status-badge no-fine">No Fine</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+<style>
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        background: #f5f7fa;
+    }
+
+    .main-title {
+        color: #2266aa;
+        letter-spacing: 1px;
+        margin: 30px 0 15px 0;
+        font-weight: bold;
+        text-align: left;
+    }
+
+    .filter-card {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 18px #e3e3e8;
+        margin-bottom: 32px;
+        max-width: 750px;
+        padding: 24px 24px 10px 24px;
+    }
+
+    .filter-form {
+        display: flex;
+        gap: 25px;
+        flex-wrap: wrap;
+        align-items: end;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        min-width: 180px;
+        margin-bottom: 10px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: #2266aa;
+        font-size: 1rem;
+    }
+
+    .form-select {
+        padding: 6px 10px;
+        border: 1px solid #cfd7df;
+        border-radius: 5px;
+        font-size: 0.98rem;
+    }
+
+    .btn-apply {
+        background: linear-gradient(90deg,#3f8efc,#206ddb);
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        font-weight: 600;
+        padding: 8px 20px;
+        box-shadow: 0 2px 6px #bdc3cf32;
+        cursor: pointer;
+        letter-spacing: 1px;
+        transition: background 0.2s;
+    }
+
+        .btn-apply:hover {
+            background: linear-gradient(90deg,#206ddb,#3f8efc);
+        }
+
+    .table-container {
+        background: #fff;
+        border-radius: 8px;
+        padding: 16px;
+        box-shadow: 0 4px 18px #e2e3e9;
+    }
+
+    .custom-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 15px;
+    }
+
+        .custom-table th, .custom-table td {
+            border: 1px solid #e0e1e5;
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        .custom-table th {
+            background: #f0f7ff;
+            color: #21548a;
+            font-weight: 700;
+            position: sticky;
+            top: 0;
+            z-index: 3;
+            letter-spacing: 0.25px;
+        }
+
+        .custom-table tr:nth-child(even) {
+            background: #fafbfc;
+        }
+
+        .custom-table tbody tr:hover {
+            background: #e7f2fe !important;
+            transition: background 0.2s;
+        }
+
+    .empty-row {
+        color: #959ca8;
+        font-style: italic;
+        text-align: center;
+        padding: 24px 0;
+    }
+
+    .book-thumb {
+        width: 40px;
+        height: 54px;
+        object-fit: cover;
+        border-radius: 3px;
+        margin-right: 8px;
+        vertical-align: middle;
+        box-shadow: 0 1px 6px #ccc2;
+    }
+
+    .book-title {
+        vertical-align: middle;
+        font-weight: 500;
+    }
+
+    .status-badge {
+        display: inline-block;
+        min-width: 70px;
+        padding: 4px 12px;
+        border-radius: 30px;
+        font-size: 0.97rem;
+        font-weight: 600;
+        text-align: center;
+        color: #fff;
+    }
+
+        .status-badge.not-returned {
+            background: #edbb55;
+            color: #544000;
+        }
+
+        .status-badge.high-fine {
+            background: #e02a2a;
+        }
+
+        .status-badge.no-fine {
+            background: #21b871;
+        }
+
+    .premium-badge {
+        color: #fbbd08;
+        font-size: 1.3em;
+        vertical-align: middle;
+        margin-left: 5px;
+    }
+</style>

@@ -1,0 +1,77 @@
+﻿@model IEnumerable<LibraryManagementSystem.ViewModel.OverdueUserViewModel>
+@{
+    ViewBag.Title = "Overdue Members";
+    Layout = "~/Views/Shared/_AdminPage.cshtml";
+}
+<h2>Overdue Members</h2>
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Info"] != null)
+{
+    <div class="alert alert-info">@TempData["Info"]</div>
+}
+
+<table class="table table-bordered align-middle">
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Email</th>
+            <th>Overdue Books</th>
+            <th>Total Fine</th>
+            <th>Actions</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            var highFine = item.TotalFine >= 500;
+            <tr>
+                <td>@item.UserName</td>
+                <td>@item.Email</td>
+                <td>@item.OverdueBooks</td>
+                <td class="fw-semibold @(highFine ? "text-danger" : "")">৳@($"{item.TotalFine:0.##}")</td>
+                <td>
+                    @if (highFine && !item.IsBlockedFromBorrowing)
+                    {
+                        <form asp-action="NotifyHighFine" asp-controller="Admin" method="post" style="display:inline;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="userId" value="@item.UserId" />
+                            <button type="submit" class="btn btn-sm btn-warning">
+                                <i class="bi bi-envelope-exclamation"></i> Warn User
+                            </button>
+                        </form>
+                    }
+                    else if (item.IsBlockedFromBorrowing)
+                    {
+                        <form asp-action="UnblockUser" asp-controller="Admin" method="post" style="display:inline;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="userId" value="@item.UserId" />
+                            <button type="submit" class="btn btn-sm btn-success">
+                                <i class="bi bi-unlock"></i> Unblock
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Low Fine</span>
+                    }
+                </td>
+                <td>
+                    @if (item.IsBlockedFromBorrowing)
+                    {
+                        <span class="badge bg-danger">
+                            Blocked @(item.BlockedUntil.HasValue ? $"until {item.BlockedUntil.Value:dd MMM yyyy}" : "")
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Active</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

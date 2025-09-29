@@ -3,45 +3,58 @@
     ViewBag.Title = "Pending Return Requests";
     Layout = "~/Views/Shared/_AdminPage.cshtml";
 }
-
-<h2 class="mb-4">Pending Return Requests</h2>
-
-@if (Model.Any())
-{
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>Book</th>
-                <th>User</th>
-                <th>Borrowed On</th>
-                <th>Due Date</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var request in Model)
-            {
-                <tr>
-                    <td>@request.ProductName</td>
-                    <td>@request.UserName</td>
-                    <td>@request.BorrowDate.ToString("dd MMM yyyy")</td>
-                    <td>@request.DueDate?.ToString("dd MMM yyyy")</td>
-                    <td>
-                        <form asp-action="ApproveReturn" method="post" class="d-inline">
-                            <input type="hidden" name="id" value="@request.BookLoanId" />
-                            <button class="btn btn-sm btn-success" type="submit">✓ Approve</button>
-                        </form>
-                        <form asp-action="RejectReturn" method="post" class="d-inline ms-2">
-                            <input type="hidden" name="id" value="@request.BookLoanId" />
-                            <button class="btn btn-sm btn-danger" type="submit">✕ Reject</button>
-                        </form>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <div class="alert alert-info">No return requests at the moment.</div>
-}
+<div class="container-fluid px-0">
+    <div class="card shadow mt-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Product Name</th>
+                            <th>User Name</th>
+                            <th>Borrow Date</th>
+                            <th>Due Date</th>
+                            <th>Fine Amount</th>
+                            <th>Approve</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <i class="bi bi-book me-1 text-primary"></i>
+                                        @item.ProductName
+                                    </td>
+                                    <td>
+                                        <i class="bi bi-person-circle me-1 text-secondary"></i>
+                                        @item.UserName
+                                    </td>
+                                    <td>@item.BorrowDate.ToString("dd MMM yyyy")</td>
+                                    <td>@item.DueDate?.ToString("dd MMM yyyy")</td>
+                                    <td>@item.FineAmount.ToString("C")</td>
+                                    <td>
+                                        <form asp-action="ApproveReturn" method="post" class="d-inline">
+                                            <input type="hidden" name="id" value="@item.BookLoanId" />
+                                            <button class="btn btn-sm btn-success" type="submit">✓ Approve</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">
+                                    No return requests at this moment.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

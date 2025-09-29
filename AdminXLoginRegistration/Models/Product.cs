@@ -28,5 +28,15 @@ namespace LibraryManagementSystem.Models
         public Category Category { get; set; }
         [ValidateNever]
         public string? ProductImage { get; set; }
+        public bool IsPremium { get; set; }
+
+        // For donation logic:
+        public bool IsDonated { get; set; } = false;
+        public string DonationStatus { get; set; } = "Pending";
+        public string? DonorName { get; set; }
+        public string? DonorEmail { get; set; }
+        [DataType(DataType.DateTime)]
+        public DateTime DonationDate { get; set; } = DateTime.Now;
+
     }
 }

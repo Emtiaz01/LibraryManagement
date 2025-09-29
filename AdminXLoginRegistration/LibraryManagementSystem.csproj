@@ -15,11 +15,17 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.17" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.17" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
+    <PackageReference Include="Stripe.net" Version="48.5.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
-    <Folder Include="wwwroot\Images\products\" />
+    <Folder Include="Views\AdminArea\Admin\images\" />
+    <Folder Include="wwwroot\Images\Logo\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\Images\products\bs23-logo-icon.png" />
   </ItemGroup>
 
 </Project>

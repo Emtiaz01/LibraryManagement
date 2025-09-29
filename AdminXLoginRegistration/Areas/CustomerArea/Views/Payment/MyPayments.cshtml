@@ -1,0 +1,31 @@
+﻿@model IEnumerable<LibraryManagementSystem.Models.Payment>
+@{
+    ViewBag.Title = "My Payments";
+    Layout = "~/Views/Shared/_AdminPage.cshtml";
+}
+<div class="container mt-4">
+    <h2>My Payments</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>TransactionId</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td>@p.PaymentDate.ToString("g")</td>
+                    <td>@p.PaymentType</td>
+                    <td>@p.Amount @p.Currency.ToUpper()</td>
+                    <td>@p.Status</td>
+                    <td>@p.TransactionId</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

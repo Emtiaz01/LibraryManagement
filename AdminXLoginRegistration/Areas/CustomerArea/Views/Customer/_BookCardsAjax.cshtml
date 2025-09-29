@@ -1,0 +1,168 @@
+﻿@using LibraryManagementSystem.Models
+@model IEnumerable<LibraryManagementSystem.ViewModel.BookLoanViewModel>
+@inject AdminXLoginRegistration.Data.ApplicationDbContext db
+@Html.AntiForgeryToken()
+
+@{
+    var isBlocked = ViewBag.IsBlocked as bool? ?? false;
+}
+
+@if (Model.Any())
+{
+    foreach (var item in Model)
+    {
+        var bookId = item.Product.ProductId;
+        <div class="col-lg-3 col-sm-6 mb-4">
+            <div class="card bs23-bookcard h-100 p-2">
+                <div class="position-relative">
+                    <img src="@item.Product.ProductImage" class="card-img-top bs23-bookimg" alt="@item.Product.ProductName Cover" />
+                    @if (item.Product.ProductQuantity == 0)
+                    {
+                        <span class="position-absolute top-0 end-0 px-3 py-1 bg-danger text-white bs23-badge rounded-bottom-start">Out</span>
+                    }
+                </div>
+                <div class="card-body d-flex flex-column justify-content-between py-3">
+                    <div class="text-center mb-2">
+                        <div class="bs23-booktitle">
+                            @item.Product.ProductName
+                            @if (item.Product.IsPremium)
+                            {
+                                <span class="badge bg-warning text-dark ms-2">Premium</span>
+                            }
+                        </div>
+                        <div class="bs23-author">by <span>@item.Product.ProductAuthor</span></div>
+                    </div>
+                    <div class="mt-2">
+                        <a asp-area="CustomerArea" asp-controller="Customer" asp-action="Details"
+                           asp-route-id="@item.Product.ProductId"
+                           class="btn btn-outline-primary w-100 mb-1">
+                            <i class="bi bi-search me-1"></i> Details
+                        </a>
+                    </div>
+                    <div>
+                        @if (isBlocked)
+                        {
+                            <div class="alert alert-danger text-center fw-semibold mb-2 py-2 w-100">
+                                <i class="bi bi-x-octagon me-1"></i>
+                                You are blocked from borrowing. Please pay your fines to reactivate your account.
+                            </div>
+                        }
+                        else if (item.Product.ProductQuantity == 0)
+                        {
+                            <button type="button" class="btn btn-secondary w-100 fw-semibold" disabled>
+                                <i class="bi bi-x-octagon me-1"></i> Out of Stock
+                            </button>
+                        }
+                        else if (item.BookLoan?.Status == LibraryManagementSystem.Models.LoanStatus.Pending)
+                        {
+                            <button type="button" class="btn btn-warning w-100 fw-semibold" disabled>
+                                <i class="bi bi-hourglass-split me-1"></i> Requested
+                            </button>
+                        }
+                        else if (item.BookLoan?.Status == LibraryManagementSystem.Models.LoanStatus.Approved)
+                        {
+                            <button type="button" class="btn btn-success w-100 fw-semibold" disabled>
+                                <i class="bi bi-check-circle me-1"></i> Borrowed
+                            </button>
+                        }
+                        else if (item.BookLoan?.Status == LoanStatus.ReturnPending)
+                        {
+                            <button type="button" class="btn btn-info text-white w-100 fw-semibold" disabled>
+                                <i class="bi bi-arrow-counterclockwise me-1"></i> Return Pending
+                            </button>
+                        }
+                        else
+                        {
+                            if (item.Product.IsPremium && !(ViewBag.HasPremium ?? false))
+                            {
+                                <a asp-area="CustomerArea" asp-controller="Customer" asp-action="SubscribeView"
+                                   class="btn btn-warning w-100 fw-semibold">
+                                    <i class="bi bi-star me-1"></i> Get Premium To Borrow
+                                </a>
+                            }
+                            else
+                            {
+                                <button type="button"
+                                        class="btn btn-primary w-100 fw-semibold borrow-book-btn"
+                                        data-product-id="@item.Product.ProductId"
+                                        data-user-id="@ViewBag.CurrentUserId">
+                                    <i class="bi bi-box-arrow-down me-1"></i> Borrow
+                                </button>
+                                <div class="mt-2 borrow-dates-panel" style="display:none;">
+                                    <input type="date" class="form-control borrow-date" />
+                                    <small>Borrow Date</small>
+                                    <button type="button"
+                                            class="btn btn-success w-100 mt-2 fw-semibold confirm-borrow-btn"
+                                            data-product-id="@item.Product.ProductId"
+                                            data-user-id="@ViewBag.CurrentUserId">
+                                        <i class="bi bi-check2"></i> Confirm Borrow
+                                    </button>
+                                    <button type="button"
+                                            class="btn btn-link w-100 mt-1 text-danger cancel-borrow-btn">
+                                        Cancel
+                                    </button>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="col-12 text-center p-5 fs-3 text-secondary">
+        No books found for the selected filter/search.
+    </div>
+}
+
+<script>
+    // Show date pickers when Borrow button clicked
+    $(document).on('click', '.borrow-book-btn', function () {
+        var btn = $(this);
+        var card = btn.closest('.card');
+        // Hide any open panels in other cards
+        $('.borrow-dates-panel').hide();
+        card.find('.borrow-dates-panel').slideDown();
+    });
+
+    // Hide panel on cancel
+    $(document).on('click', '.cancel-borrow-btn', function () {
+        $(this).closest('.borrow-dates-panel').slideUp();
+    });
+
+    // Confirm Borrow handler
+    $(document).on('click', '.confirm-borrow-btn', function () {
+        var btn = $(this);
+        var card = btn.closest('.card');
+        var productId = btn.data('product-id');
+        var userId = btn.data('user-id');
+        var borrowDate = card.find('.borrow-date').val();
+
+        if (!borrowDate) {
+            alert('Please select a borrow date.');
+            return;
+        }
+
+        $.ajax({
+            url: '/CustomerArea/Customer/BorrowBookAjax',
+            type: 'POST',
+            data: {
+                productId: productId,
+                borrowDate: borrowDate,
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+            },
+            success: function (res) {
+                alert(res.message);
+                if (res.success) {
+                    location.reload();
+                }
+            },
+                error: function(xhr) {
+        console.log(xhr.responseText);
+        alert('Failed to request borrow. Status: ' + xhr.status);
+    }
+        });
+    });
+</script>

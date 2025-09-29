@@ -1,42 +1,138 @@
-﻿
-@{
+﻿@{
+    ViewBag.Title = "All Books";
     Layout = "~/Views/Shared/_AdminPage.cshtml";
 }
-<div class="card shadow border-0 mt-4">
-    <div class="card-header bg-secondary bg-gradient ml-0 py-3">
-        <div class="row">
-            <div class="col-12 text-center">
-                <h2 class="text-white py-2">Product List</h2>
-            </div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0"><i class="bi bi-book-half"></i> Product List</h2>
+        <a href="/AdminArea/Product/Upsert" class="btn btn-success">
+            <i class="bi bi-plus-lg"></i> Add Book
+        </a>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <select id="filterOption" class="form-select">
+                <option value="all">All Books</option>
+                <option value="donated">Donated Books</option>
+                <option value="instock">In Stock Books</option>
+                <option value="stockout">Stock Out Books</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <input type="text" id="searchText" class="form-control" placeholder="Search..." />
+        </div>
+        <div class="col-md-3">
+            <select id="categoryFilter" class="form-select">
+                <option value="">All Categories</option>
+                @foreach (var cat in ViewBag.Categories ?? new List<dynamic>())
+                {
+                    <option value="@cat.CategoryId">@cat.CategoryName</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100" id="productFilterBtn">
+                <i class="bi bi-search"></i> Filter
+            </button>
         </div>
     </div>
-    <div class="card-body p-4">
-        <div class="row pb-3">
-            <div class="col-6">
-            </div>
-            <div class="col-6 text-end">
-                <a asp-controller="Product" asp-action="Upsert" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i>  Create New Product
-                </a>
-            </div>
-        </div>
-
-        <table id="ProductTable" class="table table-bordered table-striped text-center">
-            <thead>
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle" id="productTable">
+            <thead class="table-light">
                 <tr>
+                    <th>Image</th>
                     <th>Name</th>
-                    <th>ISBN</th>
                     <th>Author</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
                     <th>Category</th>
+                    <th>Quantity</th>
+                    <th>Donated?</th>
+                    <th>Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
+            <tbody></tbody>
         </table>
     </div>
 </div>
 
 @section Scripts {
-    <script src="~/js/product.js" asp-append-version="true"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+        function loadProducts(filter = "all", searchText = "", categoryId = "") {
+            $.ajax({
+                url: '@Url.Action("GetProduct", "Product", new { area = "AdminArea" })',
+                type: 'GET',
+                cache: false,                       // ✅ force fresh data
+                data: { filter, searchText, categoryId, _: new Date().getTime() }, // ✅ cache buster
+                success: function (data) {
+                    let rows = '';
+                    if (!data || data.length === 0) {
+                        rows = '<tr><td colspan="8" class="text-center">No products found.</td></tr>';
+                    } else {
+                        rows = data.map(p => {
+                            let imgSrc = p.productImage ? p.productImage.replace(/\\/g, "/") : "/images/noimage.png";
+                            let donated = p.isDonated ? '<span class="badge bg-info">Yes</span>' : '<span class="badge bg-secondary">No</span>';
+                            let status = p.productQuantity == 0
+                                ? '<span class="badge bg-danger">Stock Out</span>'
+                                : '<span class="badge bg-success">In Stock</span>';
+                            let author = p.productAuthor || "";
+                            let category = (p.category && p.category.categoryName) || "";
+
+                            return `<tr>
+                                <td><img src="${imgSrc}" alt="Cover" style="height:50px;width:38px;object-fit:cover;border-radius:5px;"></td>
+                                <td><a href="/AdminArea/Product/Details/${p.productId}" style="font-weight:bold">${p.productName}</a></td>
+                                <td>${author}</td>
+                                <td>${category}</td>
+                                <td>${p.productQuantity}</td>
+                                <td>${donated}</td>
+                                <td>${status}</td>
+                                <td>
+                                    <a href="/AdminArea/Product/Upsert/${p.productId}" class="btn btn-sm btn-outline-primary me-2">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <button data-id="${p.productId}" class="btn btn-sm btn-outline-danger delete-product">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>`;
+                        }).join('');
+                    }
+                    $('#productTable tbody').html(rows);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $('#filterOption').val("all");
+            $('#searchText').val("");
+            $('#categoryFilter').val("");
+            loadProducts();
+
+            $('#productFilterBtn').click(function () {
+                let filter = $('#filterOption').val();
+                let searchText = $('#searchText').val();
+                let categoryId = $('#categoryFilter').val();
+                loadProducts(filter, searchText, categoryId);
+            });
+
+            $(document).on('click', '.delete-product', function () {
+                if (confirm('Are you sure you want to delete this book?')) {
+                    var id = $(this).data("id");
+                    $.ajax({
+                        url: '@Url.Action("Delete", "Product", new { area = "AdminArea" })/' + id,
+                        type: 'DELETE',
+                        success: function (data) {
+                            alert(data.message || "Deleted successfully.");
+                            loadProducts();
+                        },
+                        error: function () {
+                            alert('Could not delete product.');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 }

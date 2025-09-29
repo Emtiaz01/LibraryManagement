@@ -24,22 +24,20 @@ namespace AdminXLoginRegistration.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILogger<RegisterModel> _logger;
-        private readonly ApplicationDbContext _context;
-
-       
 
         public RegisterModel(
-            ApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
+            RoleManager<IdentityRole> roleManager,
             ILogger<RegisterModel> logger)
         {
-            _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
+            _roleManager = roleManager;
             _logger = logger;
         }
 
@@ -73,6 +71,10 @@ namespace AdminXLoginRegistration.Areas.Identity.Pages.Account
             [Required]
             [Display(Name = "Role")]
             public string Role { get; set; }
+
+            [Required(ErrorMessage = "You must accept the terms.")]
+            [Display(Name = "Accept Terms")]
+            public bool AcceptTerms { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
