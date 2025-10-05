@@ -4,61 +4,338 @@
     Layout = "~/Views/Shared/_AdminPage.cshtml";
 }
 
-<div class="container py-4">
-    <div class="row">
-        <div class="col-md-5">
-            <img src="@Model.Product.ProductImage" class="img-thumbnail" style="max-width:160px; margin-bottom: 1em;" alt="Book Cover" />
-            <h3>@Model.Product.ProductName</h3>
-            <p><strong>Author:</strong> @Model.Product.ProductAuthor</p>
-            <p><strong>ISBN:</strong> @Model.Product.ProductISBN</p>
-            <p><strong>Category:</strong> @Model.Product.Category?.CategoryName</p>
-            <p><strong>Description:</strong> @Model.Product.Description</p>
-            <p><strong>Quantity:</strong> @Model.Product.ProductQuantity</p>
-            <p><strong>Price:</strong> @Model.Product.ProductPrice</p>
-            <p><strong>Donated?</strong> @(Model.Product.IsDonated ? "Yes" : "No")</p>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<style>
+    .bs23-top-card {
+        background: #fff;
+        border-radius: 24px;
+        box-shadow: 0 8px 32px rgba(59,130,246,.08);
+        border: 1px solid #e2e8f0;
+        padding: 3rem 4rem;
+        margin-bottom: 2rem;
+        display: flex;
+        gap: 3rem;
+        align-items: center;
+        flex-wrap: wrap;
+        width: 100%;
+        min-height: 450px;
+    }
+
+    .bs23-product-image {
+        width: 320px;
+        height: 420px;
+        object-fit: cover;
+        border-radius: 18px;
+        box-shadow: 0 8px 34px #90cdf4af;
+        background: #f8fafc;
+        border: 2.5px solid #e2e8f0;
+        margin-right: 3rem;
+        flex-shrink: 0;
+    }
+
+    .bs23-detail-table {
+        border: none;
+        font-size: 1.6rem;
+        letter-spacing: .01em;
+        font-weight: 400;
+    }
+
+        .bs23-detail-table td:first-child {
+            font-weight: 700;
+            color: #374151;
+            padding: .44rem 1.8rem .44rem 0;
+            font-size: 1.28rem;
+            min-width: 180px;
+            width: 220px;
+        }
+
+        .bs23-detail-table td:last-child {
+            color: #191f30;
+            font-weight: 600;
+            font-size: 1.5rem;
+            padding: .44rem 0 .44rem .3rem;
+        }
+
+    .bs23-badge {
+        background: linear-gradient(90deg,#fff7ae,#ffe082);
+        color: #b88c00;
+        font-weight: 700;
+        border-radius: 8px;
+        padding: .32rem .95rem;
+        margin-left: 0.4rem;
+        font-size: 1.1rem;
+        vertical-align: middle;
+    }
+
+    .bs23-donated-no {
+        color: #dc2626;
+        font-weight: 700;
+        font-size: 1.45rem;
+    }
+
+    .bs23-donated-yes {
+        color: #059669;
+        font-weight: 700;
+        font-size: 1.45rem;
+    }
+
+    .bs23-description-card {
+        background: #f9fafb;
+        border-radius: 20px;
+        box-shadow: 0 4px 16px rgba(59,130,246,.08);
+        border: 1px solid #e2e8f0;
+        padding: 1.6rem 2.3rem 1.6rem 2.3rem;
+        font-size: 1.08rem;
+        margin-bottom: 2.5rem;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .bs23-desc-title {
+        color: #2563eb;
+        font-weight: 800;
+        font-size: 1.13rem;
+        letter-spacing: .02em;
+        margin-bottom: .67rem;
+        display: flex;
+        align-items: center;
+    }
+
+        .bs23-desc-title .bi {
+            margin-right: .6rem;
+        }
+
+    .bs23-loan-card {
+        background: #fff;
+        border-radius: 22px;
+        box-shadow: 0 6px 32px rgba(59,130,246,.10);
+        border: 1px solid #e2e8f0;
+        padding: 2.2rem 2rem 2rem 2rem;
+        margin-bottom: 2rem;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .bs23-loan-title {
+        font-size: 1.19rem;
+        font-weight: 800;
+        color: #2563eb;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+        .bs23-loan-title .bi {
+            margin-right: .5rem;
+        }
+
+    .bs23-table-wrap {
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 1.5px 10px rgba(147,197,253,.11);
+        border: 1px solid #dbeafe;
+        margin-bottom: 0.8rem;
+    }
+
+    .bs23-table {
+        background: transparent;
+        margin-bottom: 0;
+        font-size: .97rem;
+        width: 100%;
+    }
+
+        .bs23-table thead th {
+            background: linear-gradient(90deg,#f1f5f9,#e0e7ef 100%);
+            color: #1e293b;
+            font-weight: 700;
+        }
+
+        .bs23-table td, .bs23-table th {
+            vertical-align: middle;
+            padding: .64rem .8rem;
+            border: none;
+        }
+
+    .bs23-status-approved {
+        color: #0ea5e9;
+        font-weight: 700;
+    }
+
+    .bs23-status-returned {
+        color: #059669;
+        font-weight: 700;
+    }
+
+    .bs23-status-other {
+        color: #f59e42;
+        font-weight: 600;
+    }
+
+    .bs23-alert {
+        padding: 1.25rem 1rem;
+        text-align: center;
+        color: #64748b;
+        border-radius: 1rem;
+        background: #f7fafc;
+        font-size: 1.12rem;
+        border: 1px dashed #cbd5e1;
+        font-weight: 500;
+    }
+
+    .bs23-don-section {
+        margin-top: 2.1rem;
+        background: #fffbe8;
+        border-radius: 20px;
+        padding: 1.3rem 1.18rem 1.2rem 1.18rem;
+        box-shadow: 0 4px 14px #ffe08248;
+        border: 1.3px solid #ffe082c7;
+    }
+
+    .bs23-don-title {
+        font-size: 1.09rem;
+        font-weight: 700;
+        color: #c47b09;
+        margin-bottom: 1.08rem;
+        display: flex;
+        align-items: center;
+    }
+
+        .bs23-don-title .bi {
+            margin-right: .5rem;
+        }
+
+    .bs23-donation-table thead th {
+        background: #fffbe0;
+        color: #735300;
+    }
+
+    .bs23-donation-table td, .bs23-donation-table th {
+        font-size: 1.01rem;
+        padding: .6rem .85rem;
+    }
+
+    .bs23-back-btn {
+        background: linear-gradient(90deg,#e0e7ff,#a5b4fc 70%);
+        color: #374151;
+        border: none;
+        font-weight: 600;
+        border-radius: 10px;
+        padding: .8rem 1.6rem;
+        font-size: 1rem;
+        transition: box-shadow .2s,transform .2s;
+        margin-top: 2rem;
+        box-shadow: 0 2px 8px rgba(59,130,246,0.1);
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .bs23-back-btn:hover {
+            background: linear-gradient(90deg,#a5b4fc,#818cf8 100%);
+            color: #1e293b;
+            transform: translateY(-2px);
+            text-decoration: none;
+        }
+
+
+]
+</style>
+
+<div class="container py-3">
+    <!-- Image & Details Card (Full Width) -->
+    <div class="bs23-top-card">
+        <img src="@Model.Product.ProductImage"
+             class="bs23-product-image"
+             alt="Book Cover"
+             onerror="this.src='/images/noimage.png'" />
+        <table class="bs23-detail-table">
+            <tr>
+                <td>Book Name:</td>
+                <td>
+                    @Model.Product.ProductName
+                    @if (Model.Product.IsDonated)
+                    {
+                        <span class="bs23-badge">Donated</span>
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td>Author:</td>
+                <td>@Model.Product.ProductAuthor</td>
+            </tr>
+            <tr>
+                <td>Category:</td>
+                <td>@Model.Product.Category?.CategoryName</td>
+            </tr>
+            <tr>
+                <td>ISBN:</td>
+                <td>@Model.Product.ProductISBN</td>
+            </tr>
+            <tr>
+                <td>Donated Status:</td>
+                <td>
+                    <span class="@(Model.Product.IsDonated ? "bs23-donated-yes" : "bs23-donated-no")">
+                        @(Model.Product.IsDonated ? "Yes" : "No")
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td>Quantity:</td>
+                <td>@Model.Product.ProductQuantity</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Description Card (Full Width) -->
+    <div class="bs23-description-card">
+        <div class="bs23-desc-title"><i class="bi bi-card-text"></i> Description</div>
+        <div style="color: #374151; line-height: 1.6;">
+            @Model.Product.Description
         </div>
-        <div class="col-md-7">
-            <h4>Loan Records</h4>
-            @if (Model.LoanRecords.Any())
-            {
-                <table class="table table-bordered">
+    </div>
+
+    <!-- Loan Records Card (Full Width) -->
+    <div class="bs23-loan-card">
+        <div class="bs23-loan-title"><i class="bi bi-journal-arrow-down"></i> Loan Records</div>
+        @if (Model.LoanRecords.Any())
+        {
+            <div class="bs23-table-wrap">
+                <table class="table bs23-table mb-0">
                     <thead>
                         <tr>
-                            <th>Borrower</th>
-                            <th>Borrow Date</th>
-                            <th>Due Date</th>
-                            <th>Return Date</th>
-                            <th>Status</th>
-                            <th>Fine</th>
+                            <th><i class="bi bi-person-fill"></i> Borrower's Email'</th>
+                            <th><i class="bi bi-calendar"></i> Borrow Date</th>
+                            <th><i class="bi bi-calendar-event"></i> Due Date</th>
+                            <th><i class="bi bi-calendar-check"></i> Return Date</th>
+                            <th><i class="bi bi-shield-check"></i> Status</th>
+                            <th><i class="bi bi-currency-dollar"></i> Fine</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var loan in Model.LoanRecords)
                         {
+                            string statusText = loan.Status.ToString();
+                            string statusClass = "";
+                            if (statusText == "Returned" || statusText == "1")
+                            {
+                                statusText = "Returned";
+                                statusClass = "bs23-status-returned";
+                            }
+                            else if (statusText == "Approved" || statusText == "2")
+                            {
+                                statusText = "Approved";
+                                statusClass = "bs23-status-approved";
+                            }
+                            else
+                            {
+                                statusText = " ";
+                                statusClass = "bs23-status-other";
+                            }
                             <tr>
                                 <td>@loan.User</td>
                                 <td>@loan.BorrowDate.ToString("dd-MM-yyyy")</td>
                                 <td>@loan.DueDate.ToString("dd-MM-yyyy")</td>
                                 <td>@loan.ReturnDate?.ToString("dd-MM-yyyy")</td>
-                                <td>
-                                    @{
-                                        // Fix: Convert LoanStatus enum to string for comparison
-                                        string statusText = loan.Status.ToString();
-                                        if (statusText == "Returned" || statusText == "1")
-                                        {
-                                            statusText = "Returned";
-                                        }
-                                        else if (statusText == "Approved" || statusText == "2")
-                                        {
-                                            statusText = "Approved";
-                                        }
-                                        if (statusText != "Returned" && statusText != "Approved")
-                                        {
-                                            statusText = "";
-                                        }
-                                    }
-                                    @statusText
-                                </td>
+                                <td class="@statusClass">@statusText</td>
                                 <td>
                                     @if (loan.FineAmount != null && loan.FineAmount > 0)
                                     {
@@ -73,23 +350,25 @@
                         }
                     </tbody>
                 </table>
-
-            }
-            else
-            {
-                <p>No loan records.</p>
-            }
-
-            @if (Model.Product.IsDonated)
-            {
-                <h4>Donation Info</h4>
-                <table class="table table-bordered">
+            </div>
+        }
+        else
+        {
+            <div class="bs23-alert">
+                <i class="bi bi-info-circle"></i> No loan records available
+            </div>
+        }
+        @if (Model.Product.IsDonated)
+        {
+            <div class="bs23-don-section">
+                <div class="bs23-don-title"><i class="bi bi-gift"></i> Donation Info</div>
+                <table class="table bs23-table bs23-donation-table mb-0">
                     <thead>
                         <tr>
-                            <th>Status</th>
-                            <th>Donor Name</th>
-                            <th>Donor Email</th>
-                            <th>Date</th>
+                            <th><i class="bi bi-check2-circle"></i> Status</th>
+                            <th><i class="bi bi-person-heart"></i> Donor Name</th>
+                            <th><i class="bi bi-envelope"></i> Donor Email</th>
+                            <th><i class="bi bi-calendar-heart"></i> Date</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -101,8 +380,8 @@
                         </tr>
                     </tbody>
                 </table>
-            }
-        </div>
+            </div>
+        }
     </div>
-    <a href="@Url.Action("Index")" class="btn btn-secondary mt-3">Back to Product List</a>
+    <a href="@Url.Action("Index")" class="bs23-back-btn"><i class="bi bi-arrow-left-circle me-2"></i>Back to Product List</a>
 </div>

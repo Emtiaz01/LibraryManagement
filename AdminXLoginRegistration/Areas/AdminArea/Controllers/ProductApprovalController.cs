@@ -43,12 +43,34 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
                 product.DonationStatus = "Approved";
                 _context.SaveChanges();
 
-                // Send email if donor email exists
+                // Get current date for approval
+                var approvalDate = DateTime.Now.ToString("MMMM dd, yyyy");
+                var donationDate = product.DonationDate == default(DateTime)
+                    ? "N/A"
+                    : product.DonationDate.ToString("MMMM dd, yyyy");
+
                 if (!string.IsNullOrWhiteSpace(product.DonorEmail))
                 {
-                    string subject = "Your Donated Book Was Approved";
-                    string body = $"<p>Dear {product.DonorName ?? "Donor"},<br/>" +
-                                  $"Your donation of the book <b>{product.ProductName}</b> has been <b>approved</b> and is now part of our library collection.<br/><br/>Thank you for your generous contribution!<br/>- The Library Team</p>";
+                    string subject = $"Approval Notice: Donated Book '{product.ProductName}'";
+                    string body = $@"
+                <p>Dear {(product.DonorName ?? "Donor")},</p>
+
+                <p>We are pleased to inform you that your generous donation has been <strong>approved</strong> and added to our library collection. Below are the details:</p>
+
+                <ul>
+                    <li><strong>Book Title:</strong> {product.ProductName}</li>
+                    <li><strong>Category:</strong> {product.Category?.CategoryName ?? "N/A"}</li>
+                    <li><strong>Donation Date:</strong> {donationDate}</li>
+                    <li><strong>Approval Date:</strong> {approvalDate}</li>
+                </ul>
+
+                <p>We sincerely appreciate your contribution and your support in promoting the joy of reading within our community.</p>
+
+                <p>Thank you once again for your support.</p>
+
+                <p>Best regards,<br/>
+                The Library Team</p>
+            ";
                     await _emailService.SendEmailAsync(product.DonorEmail, subject, body);
                 }
             }
@@ -64,16 +86,37 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
                 product.DonationStatus = "Rejected";
                 _context.SaveChanges();
 
-                // Send email if donor email exists
+                // Get current date for response
+                var responseDate = DateTime.Now.ToString("MMMM dd, yyyy");
+                var donationDate = product.DonationDate == default(DateTime)
+                    ? "N/A"
+                    : product.DonationDate.ToString("MMMM dd, yyyy");
+
                 if (!string.IsNullOrWhiteSpace(product.DonorEmail))
                 {
-                    string subject = "Your Donated Book Was Not Approved";
-                    string body = $"<p>Dear {product.DonorName ?? "Donor"},<br/>" +
-                                  $"Your donation of the book <b>{product.ProductName}</b> was <b>not approved</b> at this time.<br/><br/>Thank you for your willingness to contribute.<br/>- The Library Team</p>";
+                    string subject = $"Status Update: Donated Book '{product.ProductName}'";
+                    string body = $@"
+                <p>Dear {(product.DonorName ?? "Donor")},</p>
+
+                <p>Thank you very much for donating your book to our library. While we value every offer, we regret to inform you that your donation has not been approved at this time. Please find the details below:</p>
+
+                <ul>
+                    <li><strong>Book Title:</strong> {product.ProductName}</li>
+                    <li><strong>Category:</strong> {product.Category?.CategoryName ?? "N/A"}</li>
+                    <li><strong>Donation Date:</strong> {donationDate}</li>
+                    <li><strong>Decision Date:</strong> {responseDate}</li>
+                </ul>
+
+                <p>We greatly appreciate your willingness to contribute and encourage you to reach out with future donations.</p>
+
+                <p>Best regards,<br/>
+                The Library Team</p>
+            ";
                     await _emailService.SendEmailAsync(product.DonorEmail, subject, body);
                 }
             }
             return RedirectToAction("PendingDonations");
         }
+
     }
 }

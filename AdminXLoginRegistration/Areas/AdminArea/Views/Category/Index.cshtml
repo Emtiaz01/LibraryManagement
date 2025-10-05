@@ -1,4 +1,5 @@
-﻿@{
+﻿@model IEnumerable<LibraryManagementSystem.Models.Category>
+@{
     Layout = "~/Views/Shared/_AdminPage.cshtml";
 }
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
@@ -41,16 +42,13 @@
         vertical-align: middle !important;
     }
 </style>
-
 <div class="card shadow border-0 mt-4" style="border-radius:14px;">
     <div class="card-header bs23-section-header text-center">
         <h2 class="mb-0">Category List</h2>
     </div>
     <div class="card-body p-4">
         <div class="row pb-3 align-items-center">
-            <div class="col-12 col-md-4">
-                @* <img src="~/images/bs23-logo.png" style="height:34px;width:auto;margin-bottom:7px;" alt="Brain Station 23 PLC Logo" /> *@
-            </div>
+            <div class="col-12 col-md-4"></div>
             <div class="col-12 col-md-8 text-end">
                 <a asp-controller="Category" asp-action="UpsertCategory" class="btn bs23-create-btn">
                     <i class="bi bi-plus-circle"></i> Create New Category
@@ -65,11 +63,53 @@
                     <th style="width:20%;">Action</th>
                 </tr>
             </thead>
-            <!-- The body will be loaded dynamically via JS -->
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="3" class="text-muted">No categories found.</td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var category in Model)
+                    {
+                        <tr>
+                            <td>@category.CategoryName</td>
+                            <td>@category.CategoryDescription</td>
+                            <td>
+                                <a asp-controller="Category" asp-action="UpsertCategory" asp-route-id="@category.CategoryId" class="btn btn-sm btn-outline-primary me-2">
+                                    <i class="bi bi-pencil-square"></i> Edit
+                                </a>
+                                <button type="button" data-id="@category.CategoryId" class="btn btn-sm btn-outline-danger delete-category">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
         </table>
     </div>
 </div>
-
 @section Scripts {
-    <script src="~/js/categoryview.js" asp-append-version="true"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+        $(document).on('click', '.delete-category', function () {
+            if (confirm('Are you sure you want to delete this category?')) {
+                var id = $(this).data("id");
+                $.ajax({
+                    url: '/AdminArea/Category/Delete/' + id,
+                    type: 'DELETE',
+                    success: function (data) {
+                        alert(data.message || "Deleted successfully.");
+                        location.reload();
+                    },
+                    error: function () {
+                        alert('Could not delete category.');
+                    }
+                });
+            }
+        });
+    </script>
 }

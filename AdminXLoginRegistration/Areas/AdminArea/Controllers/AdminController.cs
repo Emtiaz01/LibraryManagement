@@ -91,28 +91,6 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
         {
             var today = DateTime.Today;
 
-            // Overdue Trend
-            int totalLoans = _context.BookLoan.Count();
-            int overdueLoans = _context.BookLoan.Count(b => b.Status == LoanStatus.Approved && b.DueDate < today);
-            decimal overduePercent = totalLoans > 0 ? (100m * overdueLoans / totalLoans) : 0;
-
-            int overdueYesterday = _context.BookLoan.Count(b => b.Status == LoanStatus.Approved && b.DueDate < today.AddDays(-1));
-            decimal overdueTrendToday = overdueYesterday == 0 ? 0 : 100m * (overdueLoans - overdueYesterday) / overdueYesterday;
-
-            decimal todayRevenue = _context.Payment
-                .Where(p => p.PaymentDate.Date == today && p.Status == "Paid")
-                .Sum(p => (decimal?)p.Amount) ?? 0m;
-
-            decimal yesterdayRevenue = _context.Payment
-                .Where(p => p.PaymentDate.Date == today.AddDays(-1) && p.Status == "Paid")
-                .Sum(p => (decimal?)p.Amount) ?? 0m;
-
-            decimal todayRevenueTrend = yesterdayRevenue == 0 ? 0 : 100m * (todayRevenue - yesterdayRevenue) / yesterdayRevenue;
-
-            decimal todayPendingFines = _context.BookLoan
-                .Where(b => b.ReturnDate == null && b.Status == LoanStatus.Approved && b.DueDate < today)
-                .Select(b => (decimal?)b.FineAmount).Sum() ?? 0m;
-
             int pendingDonations = _context.Product.Count(p => p.IsDonated && p.DonationStatus == "Pending");
             int membersWithHighFine = _context.Users
                 .Count(u => _context.Payment.Where(p => p.UserId == u.Id && p.Status == "Unpaid").Sum(p => p.Amount) >= 200);
@@ -122,25 +100,16 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
             int booksIssuedToday = _context.BookLoan.Count(b => b.BorrowDate.Date == today);
             int booksReturnedToday = _context.BookLoan.Count(b => b.ReturnDate.HasValue && b.ReturnDate.Value.Date == today);
 
-            // Most overdue member analytics
-            var mostOverdueMember = _context.Users
-                .Select(u => new
-                {
-                    Id = u.Id,
-                    Name = u.UserName,
-                    OverdueBooks = _context.BookLoan.Count(b => b.UserId == u.Id && b.Status == LoanStatus.Approved && b.DueDate < today),
-                    FineAmount = _context.BookLoan.Where(b => b.UserId == u.Id && b.Status == LoanStatus.Approved && b.DueDate < today).Sum(b => (double?)b.FineAmount) ?? 0,
-                })
-                .OrderByDescending(u => u.OverdueBooks)
-                .ThenByDescending(u => u.FineAmount)
-                .FirstOrDefault(x => x.OverdueBooks > 0);
-
             // Most borrowed book:
             var mostBorrowedBook = _context.BookLoan
                 .GroupBy(b => b.ProductId)
                 .OrderByDescending(g => g.Count())
                 .Select(g => g.FirstOrDefault().Product.ProductName)
                 .FirstOrDefault();
+
+            // Overdue loans count (NEW)
+            int overdueLoans = _context.BookLoan
+                .Count(bl => bl.Status == LoanStatus.Approved && bl.DueDate < today);
 
             // Activities merge
             var loanActivities = _context.BookLoan
@@ -169,17 +138,13 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
                 .Take(10)
                 .ToList();
 
+            var allBooks = _context.Product.Include(p => p.Category).ToList();
+
             var vm = new AdminDashboardViewModel
             {
                 TotalBooks = _context.Product.Any() ? _context.Product.Sum(p => p.ProductQuantity) : 0,
                 TotalMembers = _context.Users.Count(),
                 ActiveLoans = _context.BookLoan.Count(b => b.Status == LoanStatus.Approved),
-                OverdueLoans = overdueLoans,
-                OverduePercent = overduePercent,
-                OverdueTrendToday = overdueTrendToday,
-                TodayRevenue = todayRevenue,
-                TodayRevenueTrend = todayRevenueTrend,
-                TodayPendingFines = todayPendingFines,
                 PendingDonations = pendingDonations,
                 MembersWithHighFine = membersWithHighFine,
                 BooksIssuedToday = booksIssuedToday,
@@ -188,18 +153,14 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
                 NewMembersToday = newMembersToday,
                 DonatedBooksCount = donatedBooksCount,
                 RecentActivities = mergedActivities,
-                MostBorrowedBook = mostBorrowedBook,
-                MostOverdueMember = mostOverdueMember == null ? null : new MostOverdueMemberViewModel
-                {
-                    Id = mostOverdueMember.Id,
-                    Name = mostOverdueMember.Name,
-                    OverdueBooks = mostOverdueMember.OverdueBooks,
-                    FineAmount = mostOverdueMember.FineAmount
-                }
+                AllBooks = allBooks,
+                OverdueLoans = overdueLoans,   // <---- Added this line!
+                MostBorrowedBook = mostBorrowedBook
             };
 
             return View(vm);
         }
+
 
 
 
@@ -524,6 +485,48 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
 
             return View(usersOverdue);
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ApproveAllReturns(List<int> ids)
+        {
+            if (ids == null || !ids.Any())
+            {
+                TempData["Warning"] = "No pending return requests to approve.";
+                return RedirectToAction("ReturnRequest");
+            }
+
+            var loans = _context.BookLoan
+                .Where(u => ids.Contains(u.BookLoanId) && u.Status == LoanStatus.ReturnPending)
+                .ToList();
+
+            foreach (var loan in loans)
+            {
+                double fineRatePerDay = 50.0;
+                var user = _context.Users.FirstOrDefault(u => u.Id == loan.UserId);
+                if (user != null && user.IsSubscribed && user.SubscriptionEndDate > DateTime.Now)
+                    fineRatePerDay = 25.0;
+
+                double finalFine = 0;
+                if (loan.DueDate < DateTime.Now)
+                {
+                    var overdueDays = (DateTime.Now - loan.DueDate).Days;
+                    if (overdueDays > 0)
+                        finalFine = overdueDays * fineRatePerDay;
+                }
+
+                loan.Status = LoanStatus.Returned;
+                loan.ReturnDate = DateTime.Now;
+                loan.FineAmount = finalFine;
+
+                var product = _context.Product.FirstOrDefault(u => u.ProductId == loan.ProductId);
+                if (product != null)
+                    product.ProductQuantity += 1;
+            }
+            _context.SaveChanges();
+            TempData["Success"] = "All pending return requests have been approved.";
+            return RedirectToAction("ReturnRequest");
+        }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -622,6 +625,7 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
                     IsOverdue = isOverdue,
                     IsPremiumMember = loan.User != null && loan.User.IsSubscribed && loan.User.SubscriptionEndDate > DateTime.Now,
                     BookImageUrl = loan.Product?.ProductImage ?? "/images/default-book.png",
+
 
                 };
             });
@@ -748,6 +752,32 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
             }
             return Json(new { success = false });
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ClearAllBorrowedBooks()
+        {
+            var allBookLoans = _context.BookLoan.ToList();
+            if (!allBookLoans.Any())
+            {
+                TempData["Warning"] = "No borrowed book records to clear.";
+                return RedirectToAction("AllBorrowedBooks");
+            }
+
+            // Optional: Also remove related Payment records if you want a full clean (be careful!)
+            var paymentIds = allBookLoans
+                .Select(bl => bl.BookLoanId)
+                .ToList();
+            var payments = _context.Payment.Where(p => paymentIds.Contains(p.BookLoanId ?? 0)).ToList();
+            if (payments.Any())
+                _context.Payment.RemoveRange(payments);
+
+            _context.BookLoan.RemoveRange(allBookLoans);
+            _context.SaveChanges();
+
+            TempData["Success"] = "All borrowed book records cleared successfully.";
+            return RedirectToAction("AllBorrowedBooks");
+        }
+
     }
 
 }

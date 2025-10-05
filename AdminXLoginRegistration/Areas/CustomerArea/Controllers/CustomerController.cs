@@ -324,19 +324,143 @@ namespace LibraryManagementSystem.Areas.CustomerArea.Controllers
 
                 // Send email to admin
                 var userName = user?.UserName ?? "User";
-                var adminEmail = "admin@example.com"; // update to your admin email
+                var adminEmail = "emtiuz.emon@gmail.com"; // update to your admin email
 
                 string emailBody = $@"
-        <strong>{userName}</strong> has requested to borrow the book: <strong>{product.ProductName}</strong>.<br>
-        Borrow Date: {borrowDt:yyyy-MM-dd}<br>
-        Due Date: {dueDate:yyyy-MM-dd}
-    ";
+<!DOCTYPE html>
+<html lang=""en"">
+<head>
+    <meta charset=""UTF-8"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+    <title>New Borrow Request</title>
+    <style>
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }}
+        .container {{
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }}
+        .header {{
+            background-color: #002E6D;
+            color: #ffffff;
+            padding: 15px 20px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }}
+        .header h1 {{
+            margin: 0;
+            font-size: 24px;
+        }}
+        .content {{
+            padding: 25px 20px;
+        }}
+        .content p {{
+            margin: 0 0 15px;
+        }}
+        .details-table {{
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }}
+        .details-table th, .details-table td {{
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eaeaea;
+        }}
+        .details-table th {{
+            background-color: #f9f9f9;
+            font-weight: 600;
+            width: 35%;
+        }}
+        .footer {{
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            padding: 15px;
+            border-top: 1px solid #ddd;
+            margin-top: 20px;
+        }}
+        .action-button {{
+            display: inline-block;
+            background-color: #1565c0;
+            color: white;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 15px;
+        }}
+    </style>
+</head>
+<body>
+    <div class=""container"">
+        <div class=""header"">
+            <h1>New Book Borrow Request</h1>
+        </div>
+        <div class=""content"">
+            <p>Hello Admin,</p>
+            <p>A new request to borrow a book has been submitted. Please review the details below and take the necessary action.</p>
+            
+            <table class=""details-table"">
+                <tr>
+                    <th>User</th>
+                    <td>{System.Security.SecurityElement.Escape(userName)}</td>
+                </tr>
+                <tr>
+                    <th>User Email</th>
+                    <td><a href=""mailto:{System.Security.SecurityElement.Escape(user.Email)}"">{System.Security.SecurityElement.Escape(user.Email)}</a></td>
+                </tr>
+                <tr>
+                    <th>Book Title</th>
+                    <td><strong>{System.Security.SecurityElement.Escape(product.ProductName)}</strong></td>
+                </tr>
+                <tr>
+                    <th>Book Author</th>
+                    <td>{System.Security.SecurityElement.Escape(product.ProductAuthor)}</td>
+                </tr>
+                <tr>
+                    <th>ISBN</th>
+                    <td>{System.Security.SecurityElement.Escape(product.ProductISBN)}</td>
+                </tr>
+                <tr>
+                    <th>Requested Borrow Date</th>
+                    <td>{borrowDt:MMMM dd, yyyy}</td>
+                </tr>
+                <tr>
+                    <th>Calculated Due Date</th>
+                    <td>{dueDate:MMMM dd, yyyy}</td>
+                </tr>
+            </table>
+
+            <p style=""text-align:center;"">
+                <a href=""#"" class=""action-button"">Go to Admin Dashboard</a>
+            </p>
+        </div>
+        <div class=""footer"">
+            <p>This is an automated notification from the BS Library Management System.</p>
+            <p>&copy; {DateTime.Now.Year} BS Library. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>";
 
                 await _emailService.SendEmailAsync(
                     adminEmail,
-                    "New Borrow Request",
+                    $"New Borrow Request: {product.ProductName}", // More descriptive subject
                     emailBody
                 );
+
 
                 return Json(new { success = true, message = "Your borrow request has been sent to the admin." });
             }

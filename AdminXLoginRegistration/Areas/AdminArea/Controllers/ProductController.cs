@@ -34,9 +34,11 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
 
             switch (filter)
             {
+                case "premium": qs = qs.Where(p => p.IsPremium); break;
                 case "donated": qs = qs.Where(p => p.IsDonated); break;
                 case "instock": qs = qs.Where(p => p.ProductQuantity > 0); break;
                 case "stockout": qs = qs.Where(p => p.ProductQuantity == 0); break;
+
             }
 
             if (!string.IsNullOrWhiteSpace(searchText))
@@ -213,9 +215,16 @@ public IActionResult Upsert(int? id)
             if (product == null)
                 return Json(new { success = false, message = "Product not found." });
 
+            // Check for related BookLoan records
+            var hasLoans = _context.BookLoan.Any(bl => bl.ProductId == id);
+            if (hasLoans)
+                return Json(new { success = false, message = "Cannot delete. Product has related loan or payment records." });
+
             _context.Product.Remove(product);
             _context.SaveChanges();
             return Json(new { success = true, message = "Product deleted successfully." });
         }
+
+
     }
 }

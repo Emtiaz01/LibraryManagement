@@ -9,6 +9,8 @@ using Stripe;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Globalization;
+
 
 namespace LibraryManagementSystem.Areas.AdminArea.Controllers
 {
@@ -99,14 +101,40 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpGet]
-        public IActionResult AllPayments()
+        public IActionResult AllPayments(string type = "All", string from = null, string to = null)
         {
             var payments = _context.Payment
                 .Include(p => p.User)
                 .Include(p => p.BookLoan)
                 .OrderByDescending(p => p.PaymentDate)
-                .ToList();
-            return View(payments); // finds Areas/AdminArea/Views/Payment/AllPayments.cshtml
+                .AsQueryable();
+
+            // Type filter
+            if (!string.IsNullOrWhiteSpace(type) && type != "All")
+                payments = payments.Where(p => p.PaymentType == type);
+
+            // Date filter
+            if (!string.IsNullOrWhiteSpace(from) && DateTime.TryParse(from, out var fromDate))
+                payments = payments.Where(p => p.PaymentDate.Date >= fromDate.Date);
+
+            if (!string.IsNullOrWhiteSpace(to) && DateTime.TryParse(to, out var toDate))
+                payments = payments.Where(p => p.PaymentDate.Date <= toDate.Date);
+
+            return View(payments.ToList());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ClearHistory()
+        {
+            var allPayments = _context.Payment.ToList();
+            if (allPayments.Count > 0)
+            {
+                _context.RemoveRange(allPayments);
+                _context.SaveChanges();
+            }
+            TempData["Success"] = "All payment records have been deleted.";
+            return RedirectToAction("AllPayments");
         }
     }
 }

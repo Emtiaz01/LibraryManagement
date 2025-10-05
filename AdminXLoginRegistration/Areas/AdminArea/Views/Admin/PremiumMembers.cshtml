@@ -9,7 +9,7 @@
             <th>User Name</th>
             <th>Email</th>
             <th>Subscription Ends</th>
-            <th>Status</th>
+            @* <th>Status</th> *@
             <th>Membership Action</th>
         </tr>
     </thead>
@@ -21,7 +21,7 @@
                 <td>@user.UserName</td>
                 <td>@user.Email</td>
                 <td class="sub-end-date">@user.SubscriptionEndDate?.ToString("dd MMM yyyy")</td>
-                <td>
+                @* <td>
                     @if (isActive)
                     {
                         <span class="badge bg-success">Premium (Active)</span>
@@ -30,7 +30,7 @@
                     {
                         <span class="badge bg-secondary">Inactive</span>
                     }
-                </td>
+                </td> *@
                 <td>
                     <form class="toggle-form" method="post" style="display:inline;">
                         @Html.AntiForgeryToken()

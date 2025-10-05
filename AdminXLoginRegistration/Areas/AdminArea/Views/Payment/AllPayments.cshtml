@@ -1,0 +1,128 @@
+﻿@model List<LibraryManagementSystem.Models.Payment>
+@{
+    ViewBag.Title = "All Payments";
+    Layout = "~/Views/Shared/_AdminPage.cshtml";
+
+    // For filter persistence
+    var selectedType = Context.Request.Query["type"].FirstOrDefault() ?? "All";
+    var fromDate = Context.Request.Query["from"].FirstOrDefault();
+    var toDate = Context.Request.Query["to"].FirstOrDefault();
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<style>
+    .all-payments-table th, .all-payments-table td { vertical-align: middle; }
+    .status-paid { color: #0c8c38; font-weight: bold;}
+    .status-failed { color: #b71c1c; font-weight: bold;}
+    .status-unpaid { color: #efa104; font-weight: bold;}
+    .payment-type-badge {
+        font-size: .9em;
+        border-radius: 5px;
+        font-weight: 600;
+        padding: .15em .75em;
+    }
+    .type-Fine { background: #ffe0b2; color: #ae7000; }
+    .type-Membership { background: #e3f2fd; color: #1565c0; }
+    .type-Donation { background: #ffe082; color: #8d6e63; }
+    .clear-btn { border-radius: 4px; font-weight: 500;}
+</style>
+
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <h2 class="fw-bold"><i class="bi bi-cash-stack text-success me-2"></i>All Payments</h2>
+        <form asp-action="ClearHistory" method="post" onsubmit="return confirm('Are you sure you want to clear all payment records?');">
+            <button type="submit" class="btn btn-danger clear-btn"><i class="bi bi-trash3"></i> Clear All History</button>
+        </form>
+    </div>
+
+    <form class="mb-4" method="get">
+        <div class="row g-2">
+            <div class="col-md-3 col-6">
+                <select name="type" class="form-select" onchange="this.form.submit()">
+                    <option value="All" selected="@(selectedType == "All")">All Types</option>
+                    <option value="Fine" selected="@(selectedType == "Fine")">Fine</option>
+                    <option value="Membership" selected="@(selectedType == "Membership")">Membership</option>
+                    <option value="Donation" selected="@(selectedType == "Donation")">Donation</option>
+                </select>
+            </div>
+            <div class="col-md-3 col-6">
+                <input type="date" name="from" value="@fromDate" class="form-control" onchange="this.form.submit()" placeholder="From" />
+            </div>
+            <div class="col-md-3 col-6">
+                <input type="date" name="to" value="@toDate" class="form-control" onchange="this.form.submit()" placeholder="To" />
+            </div>
+            <div class="col-md-3 col-6 d-flex align-items-center gap-2">
+                @* <button type="submit" class="btn btn-primary"><i class="bi bi-funnel"></i> Filter</button> *@
+                <a href="@Url.Action("AllPayments", "Payment", new { area="AdminArea" })" class="btn btn-light border"><i class="bi bi-x"></i> Reset</a>
+            </div>
+        </div>
+    </form>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="mb-3 d-flex flex-wrap gap-3 align-items-center">
+            <span><b>Total Payments:</b> @Model.Count()</span>
+            <span><b>Total Revenue:</b> @Model.Where(x => x.Status == "Paid").Sum(x => x.Amount).0 ৳</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover all-payments-table align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Email</th>
+                        <th>Payment Type</th>
+                        <th>Amount (৳)</th>
+                        <th>Date & Time</th>
+                        <th>Txn ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        var payment = Model[i];
+                        var user = payment.User;
+                        var paymentType = payment.PaymentType ?? "Other";
+
+                        <tr>
+                            <td>@(i + 1)</td>
+                            <td>
+                                @if (user != null)
+                                {
+                                    <span class="bold">@user.Email</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">N/A</span>
+                                }
+                            </td>
+                            <td>
+                                <span class="payment-type-badge type-@paymentType">
+                                    @paymentType
+                                </span>
+                            </td>
+                            <td class="bold">@payment.Amount.0 ৳</td>
+                            <td>@payment.PaymentDate.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")</td>
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(payment.TransactionId))
+                                {
+                                    <span class="text-secondary small">@payment.TransactionId</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">N/A</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info mt-4">
+            No payment records were found in the system.
+        </div>
+    }
+</div>

@@ -7,6 +7,12 @@
     var selectedEmail = ViewBag.SelectedEmail as string ?? "";
 }
 <h2 class="main-title">All Borrowed Books & Fines</h2>
+<form method="post" asp-action="ClearAllBorrowedBooks" onsubmit="return confirm('Are you sure you want to clear ALL borrowed books and fine records? This cannot be undone.');" style="display:inline;">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn-apply" style="background:#e02a2a; margin-bottom:15px;">
+        <i class="bi bi-trash"></i> Clear All
+    </button>
+</form>
 
 <div class="filter-card">
     <form method="get" asp-action="AllBorrowedBooks" class="filter-form">

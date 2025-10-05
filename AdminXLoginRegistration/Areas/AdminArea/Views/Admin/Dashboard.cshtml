@@ -8,41 +8,44 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
 <style>
-    .bs23-insight-row {
-        margin-bottom: 1.8rem;
+    .bs23-dashboard-header {
+        margin-bottom: 2rem;
     }
 
-    .bs23-insight-card {
-        border-radius: 14px;
+    .bs23-kpi-card {
         background: #fffbe0;
-        box-shadow: 0 3px 16px -6px #ffd74077;
-        padding: 1.3rem 1.2rem;
+        border-radius: 18px;
+        box-shadow: 0 3px 18px -6px #ffd7405a;
+        padding: 1.7rem 1.2rem 1rem 1.2rem;
+        margin-bottom: 1.2rem;
     }
 
-    .bs23-insight-label {
-        font-size: 1.07rem;
-        font-weight: 600;
-        color: #957900;
+    .bs23-kpi-label {
+        font-size: 1.06rem;
+        font-weight: 700;
+        color: #b08800;
+        margin-bottom: 0.5rem;
     }
 
-    .bs23-insight-value {
-        font-size: 1.6rem;
-        font-weight: 900;
-        letter-spacing: .08em;
-    }
-
-    .bs23-insight-trendup {
-        color: #16a34a;
+    .bs23-kpi-value {
+        font-size: 2.1rem;
         font-weight: bold;
+        letter-spacing: .045em;
+        margin-bottom: 0.8rem;
+        color: #735300;
     }
 
-    .bs23-insight-trenddown {
-        color: #d32f2f;
-        font-weight: bold;
+    .bs23-kpi-btn {
+        margin-top: .5rem;
+        font-size: .93rem;
     }
 
-    .bs23-card-action {
-        margin: .5rem 0 .2rem 0;
+    .bs23-metric-card {
+        border-radius: 12px;
+        background: #faf7f2;
+        box-shadow: 0 2px 10px -6px #a2c1fa46;
+        padding: 1rem;
+        margin-bottom: 1rem;
     }
 
     .bs23-highlight-badge {
@@ -52,186 +55,356 @@
         border-radius: 8px;
         padding: .28rem .75rem;
         margin-left: .5rem;
+        font-size: 0.93rem;
     }
 
-    .bs23-member-card {
-        background: #f9f7f2;
-        border-radius: 10px;
-        padding: .7rem 1.3rem;
-        margin-bottom: .7rem;
+    .bs23-card-action {
+        margin-top: .7rem;
     }
 
-    .bs23-action-btn {
+    .bs23-section-title {
+        font-size: 1.17rem;
         font-weight: 700;
-        font-size: 1.03rem;
-        margin-right: .3rem;
+        color: #2d5397;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
     }
+
+    .bs23-scroll-panel {
+        max-height: 14.7rem;
+        overflow-y: auto;
+        padding: 0.3rem 0;
+    }
+
+    /* Professional All Books Section Styles */
+    .bs23-books-section {
+        background: linear-gradient(135deg, #f8fafd 0%, #f1f5f9 100%);
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin-top: 2rem;
+        box-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
+        border: 1px solid rgba(59, 130, 246, 0.1);
+    }
+
+    .bs23-books-header {
+        display: flex;
+        justify-content: between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 3px solid #e2e8f0;
+    }
+
+    .bs23-books-title {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #1e293b;
+        display: flex;
+        align-items: center;
+        margin: 0;
+    }
+
+        .bs23-books-title i {
+            color: #3b82f6;
+            margin-right: 0.75rem;
+            font-size: 1.5rem;
+        }
+
+    .bs23-books-count {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1rem;
+        margin-left: 1rem;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .bs23-books-toggle-btn {
+        background: linear-gradient(135deg, #059669, #047857);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+    }
+
+        .bs23-books-toggle-btn:hover {
+            background: linear-gradient(135deg, #047857, #065f46);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(5, 150, 105, 0.4);
+            color: white;
+        }
+
+    .bs23-books-grid {
+        display: none;
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+        .bs23-books-grid.show {
+            display: block;
+        }
+
+    .bs23-book-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border: 1px solid #e2e8f0;
+        height: 100%;
+        position: relative;
+    }
+
+        .bs23-book-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            border-color: #3b82f6;
+        }
+
+    .bs23-book-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+        transition: transform 0.3s ease;
+    }
+
+    .bs23-book-card:hover .bs23-book-image {
+        transform: scale(1.05);
+    }
+
+    .bs23-book-content {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        height: calc(100% - 200px);
+    }
+
+    .bs23-book-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 0.75rem;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .bs23-book-meta {
+        margin-bottom: 1rem;
+        flex-grow: 1;
+    }
+
+    .bs23-book-meta-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        color: #64748b;
+    }
+
+        .bs23-book-meta-item i {
+            color: #3b82f6;
+            margin-right: 0.5rem;
+            width: 16px;
+            text-align: center;
+        }
+
+    .bs23-book-meta-value {
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .bs23-stock-badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 1rem;
+        display: inline-block;
+    }
+
+    .bs23-stock-available {
+        background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+        color: #166534;
+        border: 1px solid #bbf7d0;
+    }
+
+    .bs23-stock-out {
+        background: linear-gradient(135deg, #fef2f2, #fecaca);
+        color: #dc2626;
+        border: 1px solid #fecaca;
+    }
+
+    .bs23-book-actions {
+        margin-top: auto;
+        padding-top: 1rem;
+        border-top: 1px solid #f1f5f9;
+    }
+
+    .bs23-details-btn {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+        border: none;
+        padding: 0.75rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        width: 100%;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+
+        .bs23-details-btn:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+    .bs23-search-filter-bar {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e2e8f0;
+    }
+
+    .bs23-search-input {
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+        .bs23-search-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            outline: none;
+        }
+
+    .bs23-filter-select {
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+        .bs23-filter-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            outline: none;
+        }
+
+    .bs23-no-books {
+        text-align: center;
+        padding: 3rem;
+        color: #64748b;
+    }
+
+        .bs23-no-books i {
+            font-size: 4rem;
+            color: #cbd5e1;
+            margin-bottom: 1rem;
+        }
+
+
 </style>
 
-<div class="container-fluid px-0">
-    <!-- Insights Row -->
-    <div class="row bs23-insight-row">
-        <div class="col-md-3">
-            <div class="bs23-insight-card text-center">
-                <div class="bs23-insight-label">Overdue %</div>
-                <div class="bs23-insight-value">@Model.OverduePercent.ToString("0.##") %</div>
-                @if (Model.OverdueTrendToday > 0)
-                {
-                    <span class="bs23-insight-trendup"><i class="bi bi-arrow-up"></i> +@Model.OverdueTrendToday.ToString("0.##")% today</span>
-                }
-                else if (Model.OverdueTrendToday < 0)
-                {
-                    <span class="bs23-insight-trenddown"><i class="bi bi-arrow-down"></i> @(-Model.OverdueTrendToday).ToString("0.##")% today</span>
-                }
-                else
-                {
-                    <span class="text-muted">No change</span>
-                }
+<!-- Dashboard Header (KPIs) -->
+<div class="container-fluid px-0 bs23-dashboard-header">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <!-- Pending Donations -->
+            <div class="bs23-kpi-card text-center">
+                <div class="bs23-kpi-label"><i class="bi bi-journal-bookmark text-warning me-2"></i>Pending Donations</div>
+                <div class="bs23-kpi-value">@Model.PendingDonations</div>
+                <a href="@Url.Action("PendingDonations", "ProductApproval", new { area = "AdminArea" })" class="btn btn-warning bs23-kpi-btn px-4">Review All</a>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="bs23-insight-card text-center">
-                <div class="bs23-insight-label">Today's Revenue</div>
-                <div class="bs23-insight-value">৳@Model.TodayRevenue.ToString("0.##")</div>
-                @if (Model.TodayRevenueTrend > 0)
-                {
-                    <span class="bs23-insight-trendup"><i class="bi bi-graph-up"></i> Up</span>
-                }
-                else if (Model.TodayRevenueTrend < 0)
-                {
-                    <span class="bs23-insight-trenddown"><i class="bi bi-graph-down"></i> Down</span>
-                }
-                else
-                {
-                    <span class="text-muted">No change</span>
-                }
+        <div class="col-md-4">
+            <!-- Active Loans -->
+            <div class="bs23-kpi-card text-center">
+                <div class="bs23-kpi-label"><i class="bi bi-journal-arrow-down text-success me-2"></i>Active Loans</div>
+                <div class="bs23-kpi-value">@Model.ActiveLoans</div>
+                <a href="@Url.Action("AllBorrowedBooks", "Admin", new { area = "AdminArea" })" class="btn btn-outline-success bs23-kpi-btn px-4">Track Loans</a>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="bs23-insight-card text-center">
-                <div class="bs23-insight-label">Pending Donations</div>
-                <div class="bs23-insight-value">@Model.PendingDonations</div>
-                <a href="@Url.Action("PendingDonations", "ProductApproval", new { area = "AdminArea" })" class="btn btn-warning bs23-action-btn my-2">Review</a>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="bs23-insight-card text-center">
-                <div class="bs23-insight-label">High-Fine Members</div>
-                <div class="bs23-insight-value">@Model.MembersWithHighFine</div>
-                <a href="@Url.Action("GetUser", "Admin", new { area = "AdminArea" })" class="btn btn-danger bs23-action-btn my-2">Notify</a>
+        <div class="col-md-4">
+            <!-- Overdue -->
+            <div class="bs23-kpi-card text-center">
+                <div class="bs23-kpi-label"><i class="bi bi-alarm text-danger me-2"></i>Overdue</div>
+                <div class="bs23-kpi-value">
+                    @Model.OverdueLoans
+                    @if (Model.OverdueLoans >= 500)
+                    {
+                        <span class="bs23-highlight-badge">Action Needed!</span>
+                    }
+                </div>
+                <a href="@Url.Action("OverdueList", "Admin", new { area = "AdminArea" })" class="btn btn-danger bs23-kpi-btn px-4">Review Overdue</a>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Main KPI Cards Row -->
-    <div class="row row-cols-2 row-cols-md-5 g-4 mb-4">
-        <div class="col">
-            <div class="card text-center bs23-card">
-                <div class="card-body">
-                    <div class="bi bi-book text-primary"></div>
-                    <div class="bs23-label">Books</div>
-                    <div class="bs23-metric text-muted">@Model.TotalBooks</div>
-                    <div class="bs23-card-action"><a href="@Url.Action("GetProduct", "Admin", new { area = "AdminArea" })" class="btn btn-outline-primary btn-sm">Manage</a></div>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card text-center bs23-card">
-                <div class="card-body">
-                    <div class="bi bi-people text-success"></div>
-                    <div class="bs23-label">Members</div>
-                    <div class="bs23-metric text-muted">@Model.TotalMembers</div>
-                    <div class="bs23-card-action"><a href="@Url.Action("GetUser", "Admin", new { area = "AdminArea" })" class="btn btn-outline-success btn-sm">View All</a></div>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card text-center bs23-card">
-                <div class="card-body">
-                    <div class="bi bi-journal-arrow-down text-warning"></div>
-                    <div class="bs23-label">Active Loans</div>
-                    <div class="bs23-metric text-muted">@Model.ActiveLoans</div>
-                    <div class="bs23-card-action"><a href="@Url.Action("AllBorrowedBooks", "Admin", new { area = "AdminArea" })" class="btn btn-outline-warning btn-sm">Track All</a></div>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card text-center bs23-card">
-                <div class="card-body">
-                    <div class="bi bi-alarm text-danger"></div>
-                    <div class="bs23-label">Overdue</div>
-                    <div class="bs23-metric text-muted">
-                        @Model.OverdueLoans
-                        @if (Model.OverdueLoans > 0)
-                        {
-                            <span class="bs23-highlight-badge">Action Needed!</span>
-                        }
-                    </div>
-                    <div class="bs23-card-action"><a href="@Url.Action("OverdueList", "Admin", new { area = "AdminArea" })" class="btn btn-danger btn-sm">Review</a></div>
-                </div>
-            </div>
-        </div>
-        <div class="col">
+<!-- Quick Actions & Stats Row -->
+<div class="container-fluid px-0">
+    <div class="row g-4">
+        <!-- Payments Action Card -->
+        <div class="col-md-3">
             <a href="@Url.Action("AllPayments", "Payment", new { area = "AdminArea" })" class="text-decoration-none">
-                <div class="card text-center bs23-card bs23-card-highlight">
-                    <div class="card-body">
-                        <div class="bi bi-cash-coin"></div>
-                        <div class="bs23-label">Payments</div>
-                        <div class="fs-4 fw-semibold">View All</div>
-                    </div>
+                <div class="bs23-metric-card text-center h-100 d-flex flex-column justify-content-center align-items-center">
+                    <div class="bs23-section-title"><i class="bi bi-cash-coin text-info me-2"></i>Payments</div>
+                    <div class="fs-5 fw-semibold mb-2">Manage & View</div>
                 </div>
             </a>
         </div>
-    </div>
-
-    <div class="row g-4">
-        <div class="col-lg-6">
-            <div class="card bs23-card">
-                <div class="card-header fw-bold text-primary d-flex align-items-center" style="background:#eaf1fb;">
-                    <i class="bi bi-bar-chart-steps me-2"></i>
-                    <span>Library Stats</span>
+        <!-- Library Stats -->
+        <div class="col-md-5">
+            <div class="bs23-metric-card">
+                <div class="bs23-section-title"><i class="bi bi-bar-chart-steps me-2"></i>Library Stats</div>
+                <div class="row gy-2">
+                    <div class="col-7">Donated Books</div>
+                    <div class="col-5 text-end text-muted fw-semibold">@Model.DonatedBooksCount</div>
+                    <div class="col-7">Books Issued Today</div>
+                    <div class="col-5 text-end text-muted fw-semibold">@Model.BooksIssuedToday</div>
+                    <div class="col-7">Books Returned</div>
+                    <div class="col-5 text-end text-muted fw-semibold">@Model.BooksReturnedToday</div>
+                    <div class="col-7">Books Reserved</div>
+                    <div class="col-5 text-end text-muted fw-semibold">@Model.BooksReserved</div>
+                    <div class="col-7">New Members Joined</div>
+                    <div class="col-5 text-end text-muted fw-semibold">@Model.NewMembersToday</div>
                 </div>
-                <div class="card-body">
-                    <div class="row gy-2">
-                        <div class="col-7">Donated Books</div>
-                        <div class="col-5 text-end text-muted fw-semibold">@Model.DonatedBooksCount</div>
-                        <div class="col-7">Books Issued Today</div>
-                        <div class="col-5 text-end text-muted fw-semibold">@Model.BooksIssuedToday</div>
-                        <div class="col-7">Books Returned</div>
-                        <div class="col-5 text-end text-muted fw-semibold">@Model.BooksReturnedToday</div>
-                        <div class="col-7">Books Reserved</div>
-                        <div class="col-5 text-end text-muted fw-semibold">@Model.BooksReserved</div>
-                        <div class="col-7">New Members Joined</div>
-                        <div class="col-5 text-end text-muted fw-semibold">@Model.NewMembersToday</div>
-                    </div>
-                    <div class="bs23-card-action mt-2">
-                        <a href="#" class="btn btn-outline-secondary btn-sm"><i class="bi bi-download"></i> Export Stats</a>
-                    </div>
-                </div>
-                @if (Model.MostOverdueMember != null)
-                {
-                    <div class="bs23-member-card">
-                        <span class="fw-semibold"><i class="bi bi-exclamation-octagon text-danger"></i> Most Overdue Member:</span>
-                        <span>@Model.MostOverdueMember.Name (@Model.MostOverdueMember.OverdueBooks) books, ৳@Model.MostOverdueMember.FineAmount.ToString("0.##")</span>
-                        <a href="@Url.Action("GetUser", "Admin", new { area = "AdminArea", id = Model.MostOverdueMember.Id })"
-                           class="btn btn-sm btn-outline-danger ms-2">Notify</a>
-                    </div>
-                }
                 @if (!string.IsNullOrEmpty(Model.MostBorrowedBook))
                 {
-                    <div class="bs23-member-card">
+                    <div class="bs23-member-card mt-3">
                         <span class="fw-semibold"><i class="bi bi-star-fill text-warning"></i> Most Borrowed Book:</span>
                         <span>@Model.MostBorrowedBook</span>
                     </div>
                 }
             </div>
         </div>
-        <div class="col-lg-6">
-            <div class="card bs23-card">
-                <div class="card-header fw-bold text-primary d-flex align-items-center" style="background:#e3ecf8;">
-                    <i class="bi bi-clock-history me-2"></i>
-                    <span>Recent Activity</span>
-                </div>
+        <!-- Recent Activity -->
+        <div class="col-md-4">
+            <div class="bs23-metric-card">
+                <div class="bs23-section-title"><i class="bi bi-clock-history me-2"></i>Recent Activity</div>
                 <div class="bs23-scroll-panel">
                     <ul class="list-group list-group-flush">
                         @if (Model.RecentActivities != null && Model.RecentActivities.Count > 0)
@@ -251,3 +424,239 @@
         </div>
     </div>
 </div>
+
+<!-- Professional All Books Section -->
+<div class="container-fluid px-0">
+    <div class="bs23-books-section">
+        <!-- Books Header -->
+        <div class="bs23-books-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="d-flex align-items-center">
+                <h2 class="bs23-books-title">
+                    <i class="bi bi-bookshelf"></i>
+                    Library Collection
+                    <span class="bs23-books-count">
+                        Total: @Model.AllBooks.Count Books
+                    </span>
+                </h2>
+            </div>
+            <div>
+                <button id="showBookCardsBtn" class="bs23-books-toggle-btn">
+                    <i class="bi bi-grid-3x3-gap-fill me-2"></i>
+                    Explore Collection
+                </button>
+            </div>
+        </div>
+
+        <!-- Books Grid Container -->
+        <div id="allBookCards" class="bs23-books-grid">
+            <!-- Search and Filter Bar -->
+            <div class="bs23-search-filter-bar">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-6">
+                        <div class="position-relative">
+                            <i class="bi bi-search position-absolute" style="left: 1rem; top: 50%; transform: translateY(-50%); color: #64748b;"></i>
+                            <input type="text" id="bookSearchInput" class="form-control bs23-search-input ps-5" placeholder="Search books by title, author, or category...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="stockFilter" class="form-select bs23-filter-select">
+                            <option value="">All Stock Status</option>
+                            <option value="available">In Stock</option>
+                            <option value="out">Out of Stock</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="categoryFilter" class="form-select bs23-filter-select">
+                            <option value="">All Categories</option>
+                            @{
+                                var categories = Model.AllBooks.Where(b => b.Category != null).Select(b => b.Category.CategoryName).Distinct().OrderBy(c => c);
+                            }
+                            @foreach (var category in categories)
+                            {
+                                <option value="@category">@category</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Books Grid -->
+            @if (Model.AllBooks != null && Model.AllBooks.Count > 0)
+            {
+                <div id="booksContainer" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
+                    @foreach (var book in Model.AllBooks)
+                    {
+                        <div class="col book-item" data-title="@book.ProductName.ToLower()" data-author="@book.ProductAuthor?.ToLower()" data-category="@(book.Category?.CategoryName?.ToLower() ?? "")" data-stock="@(book.ProductQuantity > 0 ? "available" : "out")">
+                            <div class="bs23-book-card">
+                                <!-- Book Image -->
+                                <img src="@(book.ProductImage ?? "/images/noimage.png")" class="bs23-book-image" alt="@book.ProductName"
+                                     onerror="this.src='/images/noimage.png'">
+
+                                <!-- Book Content -->
+                                <div class="bs23-book-content">
+                                    <!-- Book Title -->
+                                    <h5 class="bs23-book-title">@book.ProductName</h5>
+
+                                    <!-- Book Meta Information -->
+                                    <div class="bs23-book-meta">
+                                        <div class="bs23-book-meta-item">
+                                            <i class="bi bi-person-fill"></i>
+                                            <span class="bs23-book-meta-value">@(book.ProductAuthor ?? "Unknown Author")</span>
+                                        </div>
+                                        <div class="bs23-book-meta-item">
+                                            <i class="bi bi-tag-fill"></i>
+                                            <span class="bs23-book-meta-value">@(book.Category?.CategoryName ?? "Uncategorized")</span>
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(book.Description))
+                                        {
+                                            <div class="bs23-book-meta-item">
+                                                <i class="bi bi-info-circle-fill"></i>
+                                                <span class="bs23-book-meta-value" style="font-size: 0.85rem; line-height: 1.3;">
+                                                    @(book.Description.Length > 60 ? book.Description.Substring(0, 60) + "..." : book.Description)
+                                                </span>
+                                            </div>
+                                        }
+                                    </div>
+
+                                    <!-- Stock Status -->
+                                    <div class="mb-3">
+                                        @if (book.ProductQuantity > 0)
+                                        {
+                                            <span class="bs23-stock-badge bs23-stock-available">
+                                                <i class="bi bi-check-circle-fill me-1"></i>
+                                                @book.ProductQuantity Available
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="bs23-stock-badge bs23-stock-out">
+                                                <i class="bi bi-x-circle-fill me-1"></i>
+                                                Out of Stock
+                                            </span>
+                                        }
+                                    </div>
+
+                                    <!-- Book Actions -->
+                                    <div class="bs23-book-actions">
+                                        <a href="/AdminArea/Product/Details/@book.ProductId" class="bs23-details-btn">
+                                            <i class="bi bi-eye-fill me-2"></i>
+                                            View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- No Results Message -->
+                <div id="noResultsMessage" class="bs23-no-books" style="display: none;">
+                    <i class="bi bi-search"></i>
+                    <h4>No books found</h4>
+                    <p>Try adjusting your search criteria or filters</p>
+                </div>
+            }
+            else
+            {
+                <div class="bs23-no-books">
+                    <i class="bi bi-bookshelf"></i>
+                    <h4>No books available</h4>
+                    <p>The library collection is currently empty</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleBtn = document.getElementById('showBookCardsBtn');
+            const booksGrid = document.getElementById('allBookCards');
+            const searchInput = document.getElementById('bookSearchInput');
+            const stockFilter = document.getElementById('stockFilter');
+            const categoryFilter = document.getElementById('categoryFilter');
+            const booksContainer = document.getElementById('booksContainer');
+            const noResultsMessage = document.getElementById('noResultsMessage');
+
+            // Toggle books section
+            toggleBtn.addEventListener('click', function() {
+                if (booksGrid.style.display === "none" || booksGrid.style.display === "") {
+                    booksGrid.style.display = "block";
+                    booksGrid.classList.add('show');
+                    this.innerHTML = '<i class="bi bi-x-lg me-2"></i>Hide Collection';
+                } else {
+                    booksGrid.style.display = "none";
+                    booksGrid.classList.remove('show');
+                    this.innerHTML = '<i class="bi bi-grid-3x3-gap-fill me-2"></i>Explore Collection';
+                }
+            });
+
+            // Filter functionality
+            function filterBooks() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const selectedStock = stockFilter.value;
+                const selectedCategory = categoryFilter.value.toLowerCase();
+                const bookItems = document.querySelectorAll('.book-item');
+                let visibleCount = 0;
+
+                bookItems.forEach(function(item) {
+                    const title = item.dataset.title || '';
+                    const author = item.dataset.author || '';
+                    const category = item.dataset.category || '';
+                    const stock = item.dataset.stock || '';
+
+                    const matchesSearch = !searchTerm ||
+                        title.includes(searchTerm) ||
+                        author.includes(searchTerm) ||
+                        category.includes(searchTerm);
+
+                    const matchesStock = !selectedStock || stock === selectedStock;
+                    const matchesCategory = !selectedCategory || category === selectedCategory;
+
+                    if (matchesSearch && matchesStock && matchesCategory) {
+                        item.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                // Show/hide no results message
+                if (visibleCount === 0 && booksContainer) {
+                    noResultsMessage.style.display = 'block';
+                    booksContainer.style.display = 'none';
+                } else {
+                    noResultsMessage.style.display = 'none';
+                    if (booksContainer) {
+                        booksContainer.style.display = 'flex';
+                    }
+                }
+            }
+
+            // Add event listeners for filtering
+            if (searchInput) {
+                searchInput.addEventListener('input', filterBooks);
+            }
+            if (stockFilter) {
+                stockFilter.addEventListener('change', filterBooks);
+            }
+            if (categoryFilter) {
+                categoryFilter.addEventListener('change', filterBooks);
+            }
+
+            // Add smooth scroll to books section when opened
+            toggleBtn.addEventListener('click', function() {
+                setTimeout(function() {
+                    if (booksGrid.classList.contains('show')) {
+                        booksGrid.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }, 100);
+            });
+        });
+    </script>
+}

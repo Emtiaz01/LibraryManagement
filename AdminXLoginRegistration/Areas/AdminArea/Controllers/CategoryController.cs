@@ -1,7 +1,6 @@
 ﻿using AdminXLoginRegistration.Data;
 using LibraryManagementSystem.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace LibraryManagementSystem.Areas.AdminArea.Controllers
 {
@@ -13,16 +12,23 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
         {
             _db = db;
         }
+
+        // Show the list with all categories for Razor looping
         [HttpGet]
         public IActionResult Index()
         {
-            return View();
+            var categories = _db.Category.ToList();
+            return View(categories);
         }
+
+        // For AJAX fetch (if required, e.g. for dynamic tables)
+        [HttpGet]
         public IActionResult GetCategory()
         {
             var category = _db.Category.ToList();
             return new JsonResult(category);
         }
+
         [HttpGet]
         public IActionResult UpsertCategory(int? id)
         {
@@ -39,6 +45,7 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
                 else return View(category);
             }
         }
+
         [HttpPost]
         public IActionResult UpsertCategory(Category category)
         {
@@ -58,31 +65,19 @@ namespace LibraryManagementSystem.Areas.AdminArea.Controllers
                     return RedirectToAction("Index");
                 }
             }
-            return View();
+            return View(category);
         }
-        [HttpGet]
-        public IActionResult Delete(int id) {
-            var obj = _db.Category.FirstOrDefault(u => u.CategoryId == id);
-            if (obj == null)
-            {
-                return NotFound();
-            }
-            return View(obj);
-        }
-        
-        [HttpPost("AdminArea/Category/DeleteIT/{id}")]
-        public IActionResult DeleteIT(int id)
+
+        // AJAX Delete endpoint (used by delete button in Razor table)
+        [HttpDelete]
+        public IActionResult Delete(int id)
         {
             var obj = _db.Category.FirstOrDefault(u => u.CategoryId == id);
             if (obj == null)
-            {
                 return Json(new { success = false, message = "Error while deleting" });
-            }
             _db.Category.Remove(obj);
             _db.SaveChanges();
             return Json(new { success = true, message = "Deleted successfully" });
         }
-
     }
-
 }

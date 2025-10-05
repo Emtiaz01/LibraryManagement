@@ -1,4 +1,6 @@
-﻿namespace LibraryManagementSystem.ViewModel
+﻿using LibraryManagementSystem.Models;
+
+namespace LibraryManagementSystem.ViewModel
 {
     public class AdminDashboardViewModel
     {
@@ -21,6 +23,7 @@
         public List<string> RecentActivities { get; set; }
         public MostOverdueMemberViewModel MostOverdueMember { get; set; }
         public string MostBorrowedBook { get; set; }
+        public List<Product> AllBooks { get; set; }
     }
     public class MostOverdueMemberViewModel
     {
@@ -29,5 +32,6 @@
         public double FineAmount { get; set; }
         public string Id { get; set; }
     }
+
 
 }
